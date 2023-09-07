@@ -1,0 +1,59 @@
+SM.EXE, PS.EXE, POPUP.EXE, COMMAND.COM
+
+INT 21,AH=07										Direct STDIN input, no echo
+INT 21,AH=08										Keyboard input, no echo
+INT 21,AH=09										Print string
+INT 21,AH=0A										Buffered input
+INT 21,AH=0C										Clear keyboard buffer
+INT 21,AH=0D										Disk reset
+INT 21,AH=0E										Select disk
+INT 21,AH=13										Delete file using FCB
+INT 21,AH=17										Rename file using FCB
+INT 21,AH=19										Get current default drive
+INT 21,AH=1A										Set disk transfer area address
+INT 21,AH=25,AL=0 (?!)									Set interrupt handler (AL=interrupt number)
+INT 21,AH=29,AL=01									Parse filename into FCB (use existing drive)
+INT 21,AH=2A										Get system date
+INT 21,AH=2C										Set system date
+INT 21,AH=2E										Get verify flag
+INT 21,AH=33										Extended break checking
+INT 21,AH=36										Get free disk space
+INT 21,AH=39										Create Subdirectory
+INT 21,AH=3A										Remove Subdirectory
+INT 21,AH=3B										Change current directory
+INT 21,AH=3C										Create file with handle
+INT 21,AH=3E										Close file with handle
+INT 21,AH=3F										Read from file with handle
+INT 21,AH=40										Write to file with handle
+INT 21,AH=41										Write to file with handle
+INT 21,AH=42,AL=00									Move file read/write ptr (LSeek)
+INT 21,AH=42,AL=02									Move file read/write ptr (LSeek) - AL=02 offset from end
+INT 21,AH=43,AL=00									Get file attributes
+INT 21,AH=44,AL=00									Get device info
+INT 21,AH=44,AL=01									Set device info
+INT 21,AH=44,AL=0C			CL=range of 40-4Fh, BX and CH vary		UNKNOWN (unknown IOCTL)
+INT 21,AH=47										Get current directory
+INT 21,AH=4A										Resize memory block
+INT 21,AH=4B,AL=08									UNKNOWN (EXEC, unknown subfunction)!
+INT 21,AH=4B,AL=0C									UNKNOWN (EXEC, unknown subfunction)!
+INT 21,AH=4C,AL=00									Exit with exit code (AL=exit code)
+INT 21,AH=4C,AL=01									Exit with exit code (AL=exit code)
+INT 21,AH=4E										Find first matching file
+INT 21,AH=4F										Find next matching file
+INT 21,AH=54										Get Verify Flag
+INT 21,AH=60										Truename - Canonicalise filename or path
+INT 21,AH=83,AL=01									UNKNOWN
+INT 21,AH=84,AL=00
+INT 21,AH=84,AL=01
+INT 21,AH=84,AL=02
+INT 21,AH=87
+INT 21,AH=8A
+INT 21,AH=8A		BL=0,BH=1
+INT 21,AH=8C,AL=00							DX=0
+INT 21,AH=8C,AL=01
+INT 21,AH=8C,AL=04
+INT 21,AH=8C,AL=08
+INT 21,AH=8D
+INT 21,AH=97
+
+

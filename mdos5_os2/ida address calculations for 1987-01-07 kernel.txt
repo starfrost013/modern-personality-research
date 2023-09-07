@@ -1,0 +1,19 @@
+SEGMENT IN 1987/01/07 TO FILE LOC:	Start (IDA)
+
+Segment 1 (code) 			0x0		CODE
+Segment 2 (data)			0x		DATA
+Segment 3 (PTDADATA)			0x		DATA
+Segment 4 (RING3CODE)			0x		DATA
+Segment 5 (INITCODE)			0xBC60		CODE
+Segment 6 (DCMDATA)			0x		DATA
+Segment 7 (HIGHDATA)			0x		DATA
+Segment 8 (HIGHCODE)			0x12EE0		CODE
+Segment 9 (HIGH2CODE)			0x1EE80	 	CODE
+
+
+FIGURE OUT DATA LATER!!!
+(you'll need map file loading...this is because you will need bindiff to show references
+as everything will be moved around)
+
+NOT ALLOCATED SIZE
+Subtract 0x200 because ida starts at code start - 0x200h

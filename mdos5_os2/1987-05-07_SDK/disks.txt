@@ -1,0 +1,66 @@
+Microsoft OS/2 SDK, version 1.00
+May 1988
+
+Nine 5.25" HD floppies.
+
+
+-------------------------------------------------------------------------
+  Microsoft Operating System/2                 MS OS/2 Program Disk
+  Software Development Kit
+  -----------------------------------------------------------------------
+
+
+  Copyright 1987. Microsoft Corporation. All rights reserved.
+
+  110-098-010                110098.100                      Microsoft
+-------------------------------------------------------------------------
+  Microsoft Operating System/2                 MS OS/2 Supplemental Disk
+  ...
+  110-098-012                110098.100                      Microsoft
+-------------------------------------------------------------------------
+  Microsoft Operating System/2                 MS OS/2 Programmer's
+  Software Development Kit                     Toolkit Disk
+  ...
+  110-098-017                110098.100                      Microsoft
+-------------------------------------------------------------------------
+  Microsoft Operating System/2                 Microsoft LAN Manager
+  Software Development Kit                     Reference Disk
+  ...
+  110-098-029                110098.100                      Microsoft
+-------------------------------------------------------------------------
+  Microsoft Operating System/2                 Microsoft CodeView,
+  Software Development Kit                     Utilities, and Editor
+  ...
+  110-098-036                110098.100                      Microsoft
+-------------------------------------------------------------------------
+  Microsoft Operating System/2                 MS OS/2 Example Programs
+  ...
+  110-098-048                110098.100                      Microsoft
+-------------------------------------------------------------------------
+  Microsoft Operating System/2                 Microsoft C
+  Software Development Kit                     Optimizing Compiler
+  -----------------------------------------------------------------------
+                                               Disk 1 of 2
+
+  Copyright 1983-1987. Microsoft Corporation. All rights reserved.
+
+  048-014-083                048014.100                      Microsoft
+-------------------------------------------------------------------------
+  Microsoft Operating System/2                 Microsoft C
+  Software Development Kit                     Optimizing Compiler
+  -----------------------------------------------------------------------
+                                               Disk 2 of 2
+
+  Copyright 1983-1987. Microsoft Corporation. All rights reserved.
+
+  048-014-084                048014.100                      Microsoft
+-------------------------------------------------------------------------
+  Microsoft Operating System/2                 Microsoft Macro Assembler
+  Software Development Kit
+  -----------------------------------------------------------------------
+
+  Copyright 1983-1985. Microsoft Corporation. All rights reserved.
+
+  016-014-034                016014.100                      Microsoft
+-------------------------------------------------------------------------
+

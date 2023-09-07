@@ -1,0 +1,10 @@
+todo:
+- shell (autoexec everywhere, rewritten in C)
+- file handle shit (proc specific file handles) 
+- NE API documentation.
+- PIF doc
+- PTDA docs.
+- ? char as well as *
+- Backup.exe
+
+always more shit to add.

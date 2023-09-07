@@ -1,0 +1,16 @@
+Int num		Original IRQ
+50h		IRQ0 (System timer)
+51h		IRQ1 (Keybaord)
+52h		IRQ2 (PIC2 / Cascade)
+53h		IRQ3 (COM2 @ port 2F8 / COM4 @ port 2E8) - use port to determine which
+54h		IRQ4 (COM1 @ port 3F8 / COM3 @ port 3E8) - use port to determine which
+55h		IRQ5 (Sound / Parallel Port 2 @ 278-378h)  
+56h		IRQ6 (Floppy @ 3F0-3F5h)
+57h		IRQ7 (Parallel Port 1)
+
+Other IRQs (Need to verify):
+58h		IRQ8 (RTC)
+59h		IRQ9 (Open / Network Available / Redirected IRQ2)
+5Ah		IRQ10 (Open) - Could be SCSI/Video but SCSI didn't exist yet and idk if cga/ega uses this?
+5Bh		IRQ11 (Open)
+

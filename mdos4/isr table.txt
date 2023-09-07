@@ -1,0 +1,263 @@
+IntrView
+Dump interrupt handlers from IBM PC memory dumps!
+MUST BE FULL ADDRESS SPACE DUMP
+
+Memory dump:
+
+Interrupt 0x00			AD91:81E6	N/A
+Interrupt 0x01			F000:FF23	Single Step
+Interrupt 0x02			F000:E2C3	NMI
+Interrupt 0x03			F000:FF23	N/A (INT3 is not int)
+Interrupt 0x04			F000:FF23	INTO instruction detected overflow
+Interrupt 0x05			058A:9D7E	Print Screen
+Interrupt 0x06			F000:FF23	80186+ INVALID OPCODE
+Interrupt 0x07			F000:FF23	80286+ PROCESSOR EXTENSION NOT AVAILABLE
+Interrupt 0x08			058A:9D92	Default IRQ0 (System Timer)
+Interrupt 0x09			058A:9DA6	Default IRQ1 (kbd data ready)
+Interrupt 0x0A			F000:FF23	Default IRQ2 LPT2 (PC) / Vertical Retrace (EGA, VGA)
+Interrupt 0x0B			F000:FF23	Default IRQ3 (COM2 / COM4 - see ports in IRQtoINT.txt)
+Interrupt 0x0C			F000:FF23	Default IRQ4 (COM1 / COM3 - see ports in IRQtoINT.txt)
+Interrupt 0x0D			F000:FF23	Default IRQ5 (PC, XT Fixed Disk / AT LPT2)
+Interrupt 0x0E			F000:EF57	Default IRQ6 (Disk Controller)
+Interrupt 0x0F			F000:FF23	Default IRQ7 (Parallel Printer)
+Interrupt 0x10			058A:9DBA	BIOS Video Services
+Interrupt 0x11			F000:F84D	BIOS Get Equipment List
+Interrupt 0x12			F000:F841	BIOS Get Memory Size
+Interrupt 0x13			0070:3B75	BIOS Disk & Storage Services
+Interrupt 0x14			F000:E739	BIOS Serial Services
+Interrupt 0x15			058A:9DCE	BIOS Cassette Services
+Interrupt 0x16			058A:9DE2	BIOS Keyboard Services
+Interrupt 0x17			0070:2377	BIOS Printer Services
+Interrupt 0x18			F000:E4A3	Boot to ROM Basic
+Interrupt 0x19			058A:9DF6	Boot
+Interrupt 0x1A			F000:FE6E	BIOS Time Services
+Interrupt 0x1B			058A:9E0A	BIOS Ctrl+Break Handler
+Interrupt 0x1C			058A:9E1E	BIOS System Timer Tick
+Interrupt 0x1D			0070:07AC	BIOS Video Parameter Tables
+Interrupt 0x1E			0000:0522	BIOS Diskette Parameters
+Interrupt 0x1F			0070:069E	BIOS Font Pointer
+Interrupt 0x20			058A:288C	DOS (Very old) Terminate Program
+Interrupt 0x21			058A:28AC	DOS API
+Interrupt 0x22			B6FE:0100	DOS Program Termination Address
+Interrupt 0x23			058A:2892	DOS Ctrl+C/Ctrl+Break Handler
+Interrupt 0x24			058A:2892	DOS Fatal Error Handler
+Interrupt 0x25			058A:2BC6	DOS Absolute Disk Read (<=32M)
+Interrupt 0x26			058A:2C22	DOS Absolute Disk Write (<=32M)
+Interrupt 0x27			058A:287E	DOS Old TSR (Disabled by default MDOS4)
+Interrupt 0x28			058A:2892	DOS Idle (not used by MDOS4)
+Interrupt 0x29			058A:2892	DOS Fast Console Output
+Interrupt 0x2A			058A:9E32	Offically Microsoft Networks, not MDOS4
+Interrupt 0x2B			058A:2892	DOS 2.x+ "Reserved"				IMMEDIATE RETURN
+Interrupt 0x2C			058A:9E46	DOS 2.x+ "Reserved", possibly used here		IMMEDIATE RETURN
+Interrupt 0x2D			058A:9E5A	DOS 2.x+ "Reserved", possibly used here		IMMEDIATE RETURN
+Interrupt 0x2E			058A:9E6E	Pass Command to Command Interpreter
+Interrupt 0x2F			058A:9E82	???
+Interrupt 0x30			8A28:93EA	Far Jump for CP/M Style Calls
+Interrupt 0x31			058A:2805	Overwritten by CP/M jump instruction in INT 30
+Interrupt 0x32			058A:3CBD	???
+Interrupt 0x33			058A:2892	Probably undefined (uses default handler)	IMMEDIATE RETURN
+Interrupt 0x34			058A:2892	Probably undefined (uses default handler)	IMMEDIATE RETURN
+Interrupt 0x35			058A:2892	Probably undefined (uses default handler)	IMMEDIATE RETURN
+Interrupt 0x36			058A:2892	Probably undefined (uses default handler)	IMMEDIATE RETURN
+Interrupt 0x37			058A:2892	Probably undefined (uses default handler)	IMMEDIATE RETURN
+Interrupt 0x38			058A:2892	Probably undefined (uses default handler)	IMMEDIATE RETURN
+Interrupt 0x39			058A:2892	Probably undefined (uses default handler)	IMMEDIATE RETURN
+Interrupt 0x3A			058A:2892	Probably undefined (uses default handler)	IMMEDIATE RETURN
+Interrupt 0x3B			058A:2892	Probably undefined (uses default handler)	IMMEDIATE RETURN
+Interrupt 0x3C			058A:2892	Probably undefined (uses default handler)	IMMEDIATE RETURN
+Interrupt 0x3D			058A:2892	Probably undefined (uses default handler)	IMMEDIATE RETURN
+Interrupt 0x3E			058A:2892	Probably undefined (uses default handler)	IMMEDIATE RETURN
+Interrupt 0x3F			058A:B9FD	Overlay / DLL manager???
+Interrupt 0x40			0070:069E	(These redefinitions aren't being used)
+Interrupt 0x41			0070:069E	
+Interrupt 0x42			0070:069E
+Interrupt 0x43			0070:069E
+Interrupt 0x44			0070:069E
+Interrupt 0x45			0070:069E
+Interrupt 0x46			0070:069E
+Interrupt 0x47			0070:069E
+Interrupt 0x48			0070:069E
+Interrupt 0x49			0070:069E
+Interrupt 0x4A			058A:9E96	RTC Alarm Handler
+Interrupt 0x4B			0070:069E
+Interrupt 0x4C			0070:069E
+Interrupt 0x4D			0070:069E
+Interrupt 0x4E			0070:069E
+Interrupt 0x4F			0070:069E
+Interrupt 0x50			0070:0626	Moved IRQ0 (See IRQtoINT.txt)
+Interrupt 0x51			0070:1C47	Moved IRQ1 (See IRQtoINT.txt)
+Interrupt 0x52			0070:069F	Moved IRQ2 (See IRQtoINT.txt)
+Interrupt 0x53			0070:06A2	Moved IRQ3 (See IRQtoINT.txt)
+Interrupt 0x54			0070:06A5	Moved IRQ4 (See IRQtoINT.txt)
+Interrupt 0x55			0070:4483	Moved IRQ5 (See IRQtoINT.txt)
+Interrupt 0x56			0070:3A30	Moved IRQ6 (See IRQtoINT.txt)
+Interrupt 0x57			0070:06AB	Moved IRQ7 (See IRQtoINT.txt)
+Interrupt 0x58			0070:069E
+Interrupt 0x59			0070:069E
+Interrupt 0x5A			0070:069E
+Interrupt 0x5B			0070:069E
+Interrupt 0x5C			0070:069E
+Interrupt 0x5D			0070:069E
+Interrupt 0x5E			0070:069E
+Interrupt 0x5F			0070:069E
+Interrupt 0x60			0070:069E
+Interrupt 0x61			0070:069E
+Interrupt 0x62			0070:069E
+Interrupt 0x63			0070:069E
+Interrupt 0x64			0070:069E
+Interrupt 0x65			0070:069E
+Interrupt 0x66			0070:069E
+Interrupt 0x67			0070:069E
+Interrupt 0x68			0070:069E
+Interrupt 0x69			0070:069E
+Interrupt 0x6A			0070:069E
+Interrupt 0x6B			0070:069E
+Interrupt 0x6C			0070:069E
+Interrupt 0x6D			0070:069E
+Interrupt 0x6E			0070:069E
+Interrupt 0x6F			0070:069E
+Interrupt 0x70			0070:069E
+Interrupt 0x71			0070:069E
+Interrupt 0x72			0070:069E
+Interrupt 0x73			0070:069E
+Interrupt 0x74			0070:069E
+Interrupt 0x75			0070:069E
+Interrupt 0x76			0070:069E
+Interrupt 0x77			0070:069E
+Interrupt 0x78			0070:069E
+Interrupt 0x79			0070:069E
+Interrupt 0x7A			0070:069E
+Interrupt 0x7B			0070:069E
+Interrupt 0x7C			0070:069E
+Interrupt 0x7D			0070:069E
+Interrupt 0x7E			0070:069E
+Interrupt 0x7F			0070:069E
+Interrupt 0x80			0070:069E
+Interrupt 0x81			0070:069E
+Interrupt 0x82			0070:069E
+Interrupt 0x83			0070:069E
+Interrupt 0x84			0070:069E
+Interrupt 0x85			0070:069E
+Interrupt 0x86			0070:069E
+Interrupt 0x87			0070:069E
+Interrupt 0x88			0070:069E
+Interrupt 0x89			0070:069E
+Interrupt 0x8A			0070:069E
+Interrupt 0x8B			0070:069E
+Interrupt 0x8C			0070:069E
+Interrupt 0x8D			0070:069E
+Interrupt 0x8E			0070:069E
+Interrupt 0x8F			0070:069E
+Interrupt 0x90			0070:069E
+Interrupt 0x91			0070:069E
+Interrupt 0x92			0070:069E
+Interrupt 0x93			0070:069E
+Interrupt 0x94			0070:069E
+Interrupt 0x95			0070:069E
+Interrupt 0x96			0070:069E
+Interrupt 0x97			0070:069E
+Interrupt 0x98			0070:069E
+Interrupt 0x99			0070:069E
+Interrupt 0x9A			0070:069E
+Interrupt 0x9B			0070:069E
+Interrupt 0x9C			0070:069E
+Interrupt 0x9D			0070:069E
+Interrupt 0x9E			0070:069E
+Interrupt 0x9F			0070:069E
+Interrupt 0xA0			0070:069E
+Interrupt 0xA1			0070:069E
+Interrupt 0xA2			0070:069E
+Interrupt 0xA3			0070:069E
+Interrupt 0xA4			0070:069E
+Interrupt 0xA5			0070:069E
+Interrupt 0xA6			0070:069E
+Interrupt 0xA7			0070:069E
+Interrupt 0xA8			0070:069E
+Interrupt 0xA9			0070:069E
+Interrupt 0xAA			0070:069E
+Interrupt 0xAB			0070:069E
+Interrupt 0xAC			0070:069E
+Interrupt 0xAD			0070:069E
+Interrupt 0xAE			0070:069E
+Interrupt 0xAF			0070:069E
+Interrupt 0xB0			0070:069E
+Interrupt 0xB1			0070:069E
+Interrupt 0xB2			0070:069E
+Interrupt 0xB3			0070:069E
+Interrupt 0xB4			0070:069E
+Interrupt 0xB5			0070:069E
+Interrupt 0xB6			0070:069E
+Interrupt 0xB7			0070:069E
+Interrupt 0xB8			0070:069E
+Interrupt 0xB9			0070:069E
+Interrupt 0xBA			0070:069E
+Interrupt 0xBB			0070:069E
+Interrupt 0xBC			0070:069E
+Interrupt 0xBD			0070:069E
+Interrupt 0xBE			0070:069E
+Interrupt 0xBF			0070:069E
+Interrupt 0xC0			0070:069E
+Interrupt 0xC1			0070:069E
+Interrupt 0xC2			0070:069E
+Interrupt 0xC3			0070:069E
+Interrupt 0xC4			0070:069E
+Interrupt 0xC5			0070:069E
+Interrupt 0xC6			0070:069E
+Interrupt 0xC7			0070:069E
+Interrupt 0xC8			0070:069E
+Interrupt 0xC9			0070:069E
+Interrupt 0xCA			0070:069E
+Interrupt 0xCB			0070:069E
+Interrupt 0xCC			0070:069E
+Interrupt 0xCD			0070:069E
+Interrupt 0xCE			0070:069E
+Interrupt 0xCF			0070:069E
+Interrupt 0xD0			0070:069E
+Interrupt 0xD1			0070:069E
+Interrupt 0xD2			0070:069E
+Interrupt 0xD3			0070:069E
+Interrupt 0xD4			0070:069E
+Interrupt 0xD5			0070:069E
+Interrupt 0xD6			0070:069E
+Interrupt 0xD7			0070:069E
+Interrupt 0xD8			0070:069E
+Interrupt 0xD9			0070:069E
+Interrupt 0xDA			0070:069E
+Interrupt 0xDB			0070:069E
+Interrupt 0xDC			0070:069E
+Interrupt 0xDD			0070:069E
+Interrupt 0xDE			0070:069E
+Interrupt 0xDF			0070:069E
+Interrupt 0xE0			0070:069E
+Interrupt 0xE1			0070:069E
+Interrupt 0xE2			0070:069E
+Interrupt 0xE3			0070:069E
+Interrupt 0xE4			0070:069E
+Interrupt 0xE5			0070:069E
+Interrupt 0xE6			0070:069E
+Interrupt 0xE7			0070:069E
+Interrupt 0xE8			0070:069E
+Interrupt 0xE9			0070:069E
+Interrupt 0xEA			0070:069E
+Interrupt 0xEB			0070:069E
+Interrupt 0xEC			0070:069E
+Interrupt 0xED			0070:069E
+Interrupt 0xEE			0070:069E
+Interrupt 0xEF			0070:069E
+Interrupt 0xF0			0070:069E
+Interrupt 0xF1			0070:069E
+Interrupt 0xF2			0070:069E
+Interrupt 0xF3			0070:069E
+Interrupt 0xF4			0070:069E
+Interrupt 0xF5			0070:069E
+Interrupt 0xF6			0070:069E
+Interrupt 0xF7			0070:069E
+Interrupt 0xF8			0070:069E
+Interrupt 0xF9			0070:069E
+Interrupt 0xFA			0070:069E
+Interrupt 0xFB			0070:069E
+Interrupt 0xFC			0070:069E
+Interrupt 0xFD			0070:069E
+Interrupt 0xFE			0070:069E
+Interrupt 0xFF			0003:F256
+Done!

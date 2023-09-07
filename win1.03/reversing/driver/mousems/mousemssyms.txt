@@ -1,0 +1,62 @@
+SymRead (proof of concept 1.1.0)
+A program to read Windows Symdeb format files
+
+** READING HEADER **
+
+Segment ptr to next symbol map (0 if end) 25
+Number of constants: 0
+Offset to unknown data for constants: 0x16
+Number of segments: 3
+Relative pointer to segment chain: 0x2
+Maximum length of symbol name: 12 characters
+Binary name: MOUSE
+
+** READING CONSTANTS **
+
+Next segment ptr: (0x00 if last): 0x7
+
+** READING SEGMENT _INIT **
+
+Number of symbols: 3
+Size of symbol data: 60
+Segment number: 1
+
+_INIT:0000	 INITIALIZE
+_INIT:0109	 BUSINIT
+_INIT:024B	 CHIPINIT
+Next segment ptr: (0x00 if last): 0xC
+
+** READING SEGMENT _TEXT **
+
+Number of symbols: 4
+Size of symbol data: 68
+Segment number: 2
+
+_TEXT:0000	 Inquire
+_TEXT:0026	 Enable
+_TEXT:00AE	 Disable
+_TEXT:0106	 SERIALINIT
+Next segment ptr: (0x00 if last): 0x2
+
+** READING SEGMENT DGROUP **
+
+Number of symbols: 14
+Size of symbol data: 180
+Segment number: 3
+
+DGROUP:0000	 INQUIREDATA
+DGROUP:000E	 IO_BASE
+DGROUP:0010	 VECTOR
+DGROUP:0011	 MASK_8259
+DGROUP:0012	 ENABLED
+DGROUP:001C	 PRS232
+DGROUP:001E	 IRS232
+DGROUP:0020	 INT_COND
+DGROUP:0022	 BUTTON_STATE
+DGROUP:0024	 DELTA_X
+DGROUP:0025	 DELTA_Y
+DGROUP:0026	 MSTATE
+DGROUP:0028	 MOUSE_INT
+DGROUP:004E	 DEVICE_INT
+
+Done!

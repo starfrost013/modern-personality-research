@@ -1,0 +1,45 @@
+INT 21:
+
+0x8C (AH):
+SET SIGNAL HANDLER
+
+
+0x8D (AH):
+
+SEND SIGNAL TO PROCESS
+
+AL -> signal number
+signal number is NOT compatible with unix:
+	0x01 -> ctrl+c
+	0x08 -> SIGTERM (time to go away)
+	0x09 -> SIGPIPE (broken pipe)
+	0x0D -> SIGUSER1 (user def)
+	0x0E -> SIGUSER2 (user def)
+
+
+BL -> signal action
+
+
+00h    SIG_DFL         terminate process on receipt
+01h    SIG_IGN         ignore signalMOV 
+02h    SIG_GET         signal is accepted
+03h    SIG_ERR         sender gets error
+04h    SIG_ACK         acknowledge received signal and clear it, but don't
+
+DX -> PID (DECIMAL PID in PS.EXE!!!)
+
+Returns:
+Not clear. It returned error code 6 even when the process was terminated successfully.
+INVALID HANDLE returned if you provide the wrong PID
+
+THIS CODE terminated PS.EXE with pid=10???
+MOV AX,8608
+MOV BX,0000
+MOV DX,000A [PID WAS 10]
+INT 21
+
+
+
+
+NE:
+

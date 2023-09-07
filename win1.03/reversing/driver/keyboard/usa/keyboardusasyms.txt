@@ -1,0 +1,58 @@
+SymRead (proof of concept 1.1.0)
+A program to read Windows Symdeb format files
+
+** READING HEADER **
+
+Segment ptr to next symbol map (0 if end) 24
+Number of constants: 1
+Offset to unknown data for constants: 0x2A
+Number of segments: 3
+Relative pointer to segment chain: 0x3
+Maximum length of symbol name: 19 characters
+Binary name: KEYBOARD
+
+** READING CONSTANTS **
+
+START OF CODE + 0x0059: KEYTRANSTBLLEN
+Next segment ptr: (0x00 if last): 0x6
+
+** READING SEGMENT _INIT **
+
+Number of symbols: 1
+Size of symbol data: 35
+Segment number: 1
+
+_INIT:0000	 KBINIT
+Next segment ptr: (0x00 if last): 0xD
+
+** READING SEGMENT _TEXT **
+
+Number of symbols: 6
+Size of symbol data: 89
+Segment number: 2
+
+_TEXT:0000	 Inquire
+_TEXT:0034	 Disable
+_TEXT:0083	 Enable
+_TEXT:023E	 AnsiToOem
+_TEXT:0254	 OemToAnsi
+_TEXT:026A	 ToAscii
+Next segment ptr: (0x00 if last): 0x3
+
+** READING SEGMENT DGROUP **
+
+Number of symbols: 9
+Size of symbol data: 151
+Segment number: 3
+
+DGROUP:0000	 INQUIREDATA
+DGROUP:000C	 BIOS_PROC
+DGROUP:0010	 BIOS1B_PROC
+DGROUP:0014	 LIGHTSADDR
+DGROUP:0020	 FKBRT
+DGROUP:0027	 KEYBD_INT
+DGROUP:01EE	 INT1BHANDLER
+DGROUP:0334	 KEYTRANSLATIONTABLE
+DGROUP:038D	 KEYNUMTRANS
+
+Done!

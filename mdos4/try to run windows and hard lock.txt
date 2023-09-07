@@ -1,0 +1,34 @@
+a
+
+MOV AX,226B [or where your debug is]
+MOV DS,AX
+MOV DX,0120
+MOV AX,DS
+MOV ES,AX
+MOV AX,4B00
+
+INT 21
+
+e 120 'C:\WINDOWS\KERNEL.EXE' [file name]
+e 140 61 22 6B 22 80 00 6B 22 5C 01 6B 22 6C 01 [EXEC block]
+
+result: System crash in DEBUG. Try to make a com file that does this... MAybe invalid exec block. I just used the one WIN.COM did, but changed so I know it's copying 0000s for FCB.
+
+How do I know if Windows ran?
+
+DO IT AGAIN NOW YOU HAVE A KERNEL DEBUGGER!!!!!!!!!!!
+
+a
+
+MOV AX,226B [or where your debug is]
+MOV DS,AX
+MOV DX,0120
+MOV AX,DS
+MOV ES,AX
+MOV AX,4B04
+MOV CX,0000
+
+INT 21
+
+e 120 'C:\WINDOWS\KERNELD4.EXE' [file name]
+e 140 61 22 6B 22 80 00 6B 22 5C 01 6B 22 6C 01 [EXEC block]

@@ -1,0 +1,52 @@
+segment number for football-76817 (and add other things)
+
+cluster size = 1 sector, 512 bytes (0x02 though ???)
+
+add 0x3600 (idk that's when data starts after root dir) to sector number then multiply by size of cluster
+"OS" -> sector 525. 
+
+0x3600 + (0x200 * 0x20D) = 0x45000
+
+/xOS/
+	DPB.INC (Vital information about the format of a disk drive)
+	HEADER.INC (C.Header) 
+	LOADSTE.ASM (segment loading routines)
+	V86MODE.ASM (Support for switching between V86 and protected modes on the 80386)
+	LINMGR1.ASM (Linear Memory Manager)
+	SYSIMAIN.C (sysinit C routines to load and interpret EXE files)
+/xIOS (Partially corrupted or empty??)/
+	SYSIMAIN.C (again)
+
+/xNC/ (these seem to have all survived)
+	BASEMID.INC
+	CLKADJ.INC
+	CMACROS.INC
+	DOSCALLS.INC
+	ERRNO.INC
+	ERROR2.INC
+	HISTORY
+	INFOSEG.INC	
+	STRUC.INC
+	UTILMID.INC
+	UTLERROR.INC
+	VERSION.INC
+/REGRESS/
+	MSC.EXE
+	CL.EXE
+	BIOSINC.INC
+	BIOSMAC.INC
+	BIOSSECS.INC
+	BUFFER.H
+	BUGBITS.ASM
+	BUGCODE.INC
+	BUGFLG.INC
+	CON3XDEV.ASM
+	DEVHDR.H
+	DEVSYM.B
+	DMA765.INC
+	<rest of dir corrupted>
+
+files that had their directory entries obliterated but partially survive (in regress folder)
+	IBMRGRS.BAT
+	REGRESS.BAT
+

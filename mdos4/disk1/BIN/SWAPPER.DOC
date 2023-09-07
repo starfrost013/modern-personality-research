@@ -1,0 +1,38 @@
+; Swapper.doc
+;
+;	SCCSID = @(#)swapper.doc	6.1 85/10/09
+
+Using the Dos 4.00 partition swapper.
+
+1. You must add the swapper, swapper.exe, to the autoexec.bat file.  Add
+   the following lines:
+
+	memset default = 5
+	detach swapper
+	memset default = 127
+
+   This allows the swapper to run in a minimum amount of space.
+
+   Note the swapper MUST run in backround.
+
+2. The above configuration will cause the swapper to default to the
+   root directory of c: drive for locating its swap files.  You may
+   tell the swapper where to place the swap files by specifying
+   the drive and also the directory.  You must always specify the
+   drive and the swapper will default to the root directory of the
+   drive.  Example:
+
+	detach swapper d:
+   or
+	detach swapper c:\tmp
+
+3. The swapper will manage the cleanup of its swap files.  If the
+   swap directory is changed after a system crash, there is the
+   chance that swap files will be left around.  These can be removed
+   by executing the following on the "old" swap directory:
+
+	del *.swp
+
+Currently ANY task can be swapped, so use with caution until this is
+resolved.  If you don't want to have swapping, then remove "detach
+swapper" from the autoexec.bat file.

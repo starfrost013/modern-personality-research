@@ -1,0 +1,13 @@
+terminology:
+CDS		Current Drive Structure (SYSVARS in regular dos, perproc here)
+MTE		Module Table Entry (entry in kernel process table? for process, immediately (1 paragraph) before process image or PTDA, referenced in it)
+PTDA		Per-Task Data Area (main process information segment)
+PSP		Program Segment Prefix (PSP - last? section of ptda for compatibility)
+MFT		Master File Table (system wide file table)
+SFT		System File Table (logical...? file table)
+HTE		Handle Table Entry
+BPB		BIOS Parameter Block
+BDA		BIOS Data Area
+DPB		Disk Parameter Block
+VPB		Volume Parameter Block?
+SG		Screen Group

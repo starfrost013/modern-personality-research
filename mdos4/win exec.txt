@@ -1,0 +1,18 @@
+AL = 00 (Immediately execute)
+226B+0206 = program name (yep)
+226B+026A
+
+
+WIN.COM exec block:
+part of env copy into child proc environment	2261
+ptr to command tail (ds:si???)			226B:0080
+first fcb (copy into child's psp)		226B:005C
+second fcb (copy into child's psp)		226B:006C
+
+
+[rest is irrelevant according to docs,
+as AL=00h and process SS:SP and CS:IP don't matter...because that's load don't execute]
+
+
+psp = Program Segment Prefix
+DOES NOT EXIST ON MDOS4!!!!!!!!! ONLY PTDA BUT IT SHOULD BE COMPATIBLE!!!

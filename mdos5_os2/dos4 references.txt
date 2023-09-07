@@ -1,0 +1,27 @@
+dos4 references:
+https://books.google.co.uk/books?id=Hi8EAAAAMBAJ&pg=PA11&dq=MS-DOS+4.0&hl=en&sa=X&ved=2ahUKEwi3-e68obSAAxV8VUEAHcedD3Y4ChDoAXoECAoQAg#v=onepage&q=MS-DOS%204.0&f=false
+https://books.google.co.uk/books?id=WKyJOEl_vlsC&pg=RA1-PA89&dq=MS-DOS+4.0&hl=en&sa=X&ved=2ahUKEwi3-e68obSAAxV8VUEAHcedD3Y4ChDoAXoECAgQAg#v=onepage&q=MS-DOS%204.0&f=false
+https://books.google.co.uk/books?id=Hi8EAAAAMBAJ&pg=PA11&dq=MS-DOS+4.0&hl=en&sa=X&ved=2ahUKEwi3-e68obSAAxV8VUEAHcedD3Y4ChDoAXoECAoQAg#v=onepage&q=MS-DOS%204.0&f=false
+https://books.google.co.uk/books?id=rDwEAAAAMBAJ&pg=PA75&dq=MS-DOS+4.0&hl=en&sa=X&ved=2ahUKEwi3-e68obSAAxV8VUEAHcedD3Y4ChDoAXoECAQQAg#v=onepage&q=MS-DOS%204.0&f=false
+https://books.google.co.uk/books?id=2S4EAAAAMBAJ&pg=PA17&dq=MS-DOS+4.0&hl=en&sa=X&ved=2ahUKEwi3-e68obSAAxV8VUEAHcedD3Y4ChDoAXoECAkQAg#v=onepage&q=MS-DOS%204.0&f=false
+https://books.google.co.uk/books?id=qS4EAAAAMBAJ&pg=PA17&dq=MS-DOS+4.0&hl=en&sa=X&ved=2ahUKEwjlhq6toLSAAxXSXEEAHZeTBDYQ6AF6BAgKEAI#v=onepage&q=MS-DOS%204.0&f=false
+https://books.google.co.uk/books?id=2S4EAAAAMBAJ&pg=PA16&dq=MS-DOS+4.0&hl=en&sa=X&ved=2ahUKEwjlhq6toLSAAxXSXEEAHZeTBDYQ6AF6BAgFEAI#v=onepage&q=MS-DOS%204.0&f=false
+https://books.google.co.uk/books?id=kC4EAAAAMBAJ&pg=PA13&dq=MS-DOS+4.0&hl=en&sa=X&ved=2ahUKEwjlhq6toLSAAxXSXEEAHZeTBDYQ6AF6BAgHEAI#v=onepage&q=MS-DOS%204.0&f=false
+https://books.google.co.uk/books?id=pzwEAAAAMBAJ&pg=PA6&dq=MS-DOS+4.0&hl=en&sa=X&ved=2ahUKEwjlhq6toLSAAxXSXEEAHZeTBDYQ6AF6BAgLEAI#v=onepage&q=MS-DOS%204.0&f=false
+https://books.google.co.uk/books?id=lS8EAAAAMBAJ&pg=PA1&dq=MS-DOS+4.0&hl=en&sa=X&ved=2ahUKEwjlhq6toLSAAxXSXEEAHZeTBDYQ6AF6BAgMEAI#v=onepage&q=MS-DOS%204.0&f=false
+https://books.google.co.uk/books?id=bi8EAAAAMBAJ&pg=PA33&dq=MS-DOS+4.0&hl=en&sa=X&ved=2ahUKEwi9jeGIorSAAxXjolwKHYMXD5s4HhDoAXoECAYQAg#v=onepage&q=MS-DOS%204.0&f=false
+https://books.google.co.uk/books?id=EC8EAAAAMBAJ&pg=PA47&dq=MS-DOS+4.0&hl=en&sa=X&ved=2ahUKEwi9jeGIorSAAxXjolwKHYMXD5s4HhDoAXoECA0QAg#v=onepage&q=MS-DOS%204.0&f=false
+https://books.google.co.uk/books?id=Ai8EAAAAMBAJ&pg=PA13&dq=MS-DOS+4.0&hl=en&sa=X&ved=2ahUKEwi9jeGIorSAAxXjolwKHYMXD5s4HhDoAXoECAcQAg#v=onepage&q=MS-DOS%204.0&f=false
+https://books.google.co.uk/books?id=QKWy2rYxAQQC&pg=PA28&dq=MS-DOS+4.0&hl=en&sa=X&ved=2ahUKEwjBlsm7orSAAxWhSEEAHe-UBZU4KBDoAXoECAcQAg#v=onepage&q=MS-DOS%204.0&f=false
+https://books.google.co.uk/books?id=2S4EAAAAMBAJ&pg=PA15&dq=MS-DOS+4.0&hl=en&sa=X&ved=2ahUKEwjBlsm7orSAAxWhSEEAHe-UBZU4KBDoAXoECAQQAg#v=onepage&q=MS-DOS%204.0&f=false
+https://books.google.co.uk/books?id=2S4EAAAAMBAJ&pg=PA17&dq=multitasking+dos&hl=en&sa=X&ved=2ahUKEwjw_4u6o7SAAxUbQUEAHVm9B-IQ6AF6BAgGEAI
+https://books.google.co.uk/books?id=QKWy2rYxAQQC&pg=PA27&dq=MS-DOS+4.0&hl=en&sa=X&ved=2ahUKEwjHyPHeorSAAxXHT8AKHV-GBMM4PBDoAXoECAYQAg#v=onepage&q=MS-DOS%204.0&f=false
+https://www.google.co.uk/books/edition/Dr_Dobb_s_Journal_of_Software_Tools_for/0V8TAQAAMAAJ?hl=en&gbpv=1&bsq=MS-DOS+4.0&dq=MS-DOS+4.0&printsec=frontcover ("throw it in th e trash")
+https://books.google.co.uk/books?id=nC8EAAAAMBAJ&pg=PA5&dq=multitasking+dos&hl=en&sa=X&ved=2ahUKEwjw_4u6o7SAAxUbQUEAHVm9B-IQ6AF6BAgIEAI#v=onepage&q=multitasking%20dos&f=false
+https://books.google.co.uk/books?id=2z5elvZrpisC&pg=PA6&dq=multitasking+dos&hl=en&sa=X&ved=2ahUKEwjw_4u6o7SAAxUbQUEAHVm9B-IQ6AF6BAgHEAI
+https://books.google.co.uk/books?id=hcHq9kHRifYC&pg=PA431&dq=multitasking+dos&hl=en&sa=X&ved=2ahUKEwibnamHpLSAAxVEFcAKHfPUC_o4ChDoAXoECAYQAg (while it was still "DOS 3")
+https://books.google.co.uk/books?id=ES8EAAAAMBAJ&pg=PA17&dq=multitasking+dos&hl=en&sa=X&ved=2ahUKEwibnamHpLSAAxVEFcAKHfPUC_o4ChDoAXoECAQQAg
+
+dos5 references:
+https://books.google.co.uk/books?id=nC8EAAAAMBAJ&pg=PA5&dq=MS-DOS+4.0&hl=en&sa=X&ved=2ahUKEwi3-e68obSAAxV8VUEAHcedD3Y4ChDoAXoECAMQAg#v=onepage&q=MS-DOS%204.0&f=false
+https://www.google.co.uk/books/edition/Datamation/JBRJAQAAIAAJ?hl=en&gbpv=1&bsq=MS-DOS+4.0&dq=MS-DOS+4.0&printsec=frontcover (called dos 4 for some reason)

@@ -1,0 +1,43 @@
+SymRead (proof of concept 1.1.0)
+A program to read Windows Symdeb format files
+
+** READING HEADER **
+
+Segment ptr to next symbol map (0 if end) 22
+Number of constants: 0
+Offset to unknown data for constants: 0x17
+Number of segments: 1
+Relative pointer to segment chain: 0x2
+Maximum length of symbol name: 19 characters
+Binary name: SYSTEM
+
+** READING CONSTANTS **
+
+Next segment ptr: (0x00 if last): 0x2
+
+** READING SEGMENT _TEXT **
+
+Number of symbols: 18
+Size of symbol data: 283
+Segment number: 1
+
+_TEXT:0000	 ONEDRIVEFLAG
+_TEXT:0001	 PREVINT13PROC
+_TEXT:0009	 InquireSystem
+_TEXT:01D2	 TIMERTABLE
+_TEXT:0216	 STACKBASE
+_TEXT:02D6	 PREVINT8PROC
+_TEXT:02DA	 LPTIMERTABLE
+_TEXT:02DE	 PREVSSSP
+_TEXT:02E2	 ENABLED
+_TEXT:02E3	 AT_DOS30
+_TEXT:02EA	 TIMER_INT
+_TEXT:0305	 TI1
+_TEXT:0373	 TI2
+_TEXT:0374	 EnableSystemTimers
+_TEXT:03A0	 DisableSystemTimers
+_TEXT:03BC	 CreateSystemTimer
+_TEXT:040C	 KillSystemTimer
+_TEXT:044E	 InquireLongInts
+
+Done!

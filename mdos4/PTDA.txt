@@ -1,0 +1,82 @@
+PER-TASK DATA AREA
+[MDOS4 Build 6.7]
+
+400 byte(!) structure located at segment address indicated by PS "Ptda" item
+Doesn't seem to be referred to by legacy PSP (100 bytes pre-header), but that itself seems nonstandard. PS seems to use both?
+
+PTDA checks scheduler data. If you fuck it up deliberately (so there is no PTDA header), it prints "invalid ptda address" and dies.
+Current PTDA mapped with SS 
+
+The MTE (Module Table Entry, "MT" header) is always 1 paragraph (16 bytes) before the PTDA - seems to be duplicated before NE header too and is 16 bytes in length.
+(possibly one per segment?)
+
+MTE
+0x06						Segment address of last MTE
+0x08						Segment address of previous MTE
+
+
+0x00		STRING (TD_)			Header
+0x02		WORD				Size of code segment in paragraphs?
+0x04		DWORD (Far pointer)		Pointer to binary image start, at least for NEs? 
+0x06		WORD				Unknown segment address pointer
+0x08		WORD				Segment address of program data segment
+0x17		BYTE				Priority (0-255). System will reset it if you change this, it likes to manage that
+0x1C		WORD				Segment address to NE header
+0x31		WORD				Increments forever while the process is running; number of times it got control?
+0x3E		DWORD				???
+0x4C		DWORD				Far pointer to parent process so it can be resumed???	
+0x53		BYTE				If the process is currently executing a DOS INT21 API			
+0xF0						Contains either command line, process name or device name?
+0x1B7		String				Initial working directory
+0x200		Two bytes			Unknown (usually "R8", 52 38?) 
+0x285		String				PIF filename
+0x308		String				Command line?
+00091adf
+
+0x540 is part of very interesting structure that always changes while running, revers to same values while NOT running
+
+PS uses: 0x08, 0x09, 0x0B, 0x0D, 0x17, 0x18, 0x1A, 0x1B, 0x1C, 0x1D, 0x1E, 0x1F, 0x29, 0x31, 0x33
+PS touches: 0xF8, 0xFC, 0xFE
+ 
+0x1A constantly changes in running system (likely status)
+0x31-0x32 increments forever (number of times it got control?)...
+0x35-0x37 are usually FF FF 00 but sometimes change to other values
+0x39-0x3A may be near ptr to mte...
+0x3B-0x3E are usually 
+
+Program data segment starts immediately after PTDA in all circumstances.
+
+Program code segment is loaded to completely different location...usually in upper memory.
+
+init process (unfinished):
+Kernel copies 0x368 (872) words, so 6D0 (1744) bytes for itself during init, so may be 1644 bytes, at least for kernel (everything after 400 looked all zeroes)
+
+it copies: 
+0x1C 		-> 0x10 (BYTE?)
+0x45-0x46	-> 0xFF (WORD)
+0x4B-0x4F	-> 0xFF (DWORD?, may be far ptr - "MTE" address?)
+0x5C 		-> 0x80 (BYTE?)
+0xB2		-> 0x0E (BYTE?)
+0xB4		-> 0x05 (BYTE?)
+0xC4		-> 0x05 (BYTE?)
+0x141		-> 0x90 (BYTE?)
+0x15E-0x15F	-> 0xFF	(WORD?)
+0x305-0x306	-> 0xFF (WORD?)
+0x405-0x406	-> 0xFF (WORD?)
+0x630-0x644	-> 0xFF (5 DWORDs?)
+
+followed by:
+0x62A		-> 0x14 (BYTE?)
+0x62C-0x62E	-> Pointer to bunch of FFs at 0x630 (next ptda pointer???)
+0x640-0x642	-> 0x00
+
+followed by:
+0x5F2		-> 0x02DF (WORD)
+
+followed by:
+0x20		-> Segaddress 0xB6FE (in the middle of the PTDA...)
+0x22		-> Segaddress 0xB6FE (in the middle of the PTDA...)
+0x4E		-> Segaddress 0xB6FE (in the middle of the PTDA...)
+
+
+everything else is 0x00
