@@ -1,0 +1,12 @@
+QEdit Advanced 3.0 (Commercial Version)
+Released in 1993 by SemWare
+For DOS
+
+QEdit is a powerful, highly responsive, and scriptable text-mode
+editor. It was also distributed as shareware. It competed with
+programs like Borland Brief.
+
+3.0 was the last version under the name QEdit. Later versions were
+renamed to TSE, The SemWare Editor.
+
+This is the commercial version.

@@ -1,0 +1,25 @@
+Microsoft C 4.0
+Released in 1986 by Microsoft
+For DOS
+
+Microsoft C is Microsoft's original standalone Microsoft C/C++
+compiler for DOS and Windows - Later versions were re-branded and
+renumbered as Microsoft Visual C++ and were bundled with Visual
+Studio or the SDKs.
+
+4.0 added a source-level debugger named CodeView. Added MAKE, compact
+memory model, and C Run-Time startup source code.
+
+---------------
+
+Includes eight 360k floppy disk images. (Disks 1-6 plus Learning 
+Codeview and Windows Dev Kit update)
+
+Disk01: Compiler (048-014-052)
+Disk02: Utilities (048-014-053)
+Disk03: Include Files and Libraries (Small Model) (048-014-054)
+Disk04: Libraries (Medium Model and Compact Model) (048-014-055)
+Disk05: Libraries (Large Model) (048-014-056)
+Disk06: Startup Source Code (048-014-060)
+Disk07: Learning CodeView (048-014-058)
+Disk08: Windows Dev. Kit Update (048-014-063)
