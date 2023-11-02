@@ -32,7 +32,7 @@ output folders:
 /KDATA.ASM		Kernel Data Segment											Split
 /KDEBUG.INC		Kernel debug code
 /KERNEL.CCS		Kernel part of makefile
-/KERNEL.DEF		Kernel ASM API defines
+/KERNEL.DEF		Kernel ASM API defines											Split
 /KERNEL.H		Kernel C API defines
 /KERNEL.INC		Kernel ASM include file
 /KERNEL.LNK		Kernel linker file

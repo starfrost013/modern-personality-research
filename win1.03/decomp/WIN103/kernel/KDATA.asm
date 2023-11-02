@@ -1,4 +1,8 @@
-
+;
+; The OpenWindows Project
+; © 2023 starfrost          October 30, 2023
+;
+; KDATA.ASM : KERNEL global variables
 
 ;
 ; +-------------------------------------------------------------------------+
@@ -55,8 +59,10 @@ HTHUNKS         dw 0                    ; DATA XREF: MAKEPROCINSTANCE+6↓r
                                         ; MAKEPROCINSTANCE+1E↓r ...
 HHANDLE         dw 0                    ; DATA XREF: PATCHTHUNKS+B↓r
                                         ; PATCHTHUNKS+109↓r ...
+; The top of the Process Data Block (PDB) list.
 TOPPDB          dw 0                    ; DATA XREF: CREATETASK+9A↓r
                                         ; ENABLEDOS+28↓r ...
+; The head of the PDB list.
 HEADPDB         dw 0                    ; DATA XREF: CREATETASK+B2↓w
                                         ; CLOSEOPENFILES+65↓r ...
 TOPSIZEPDB      db 2 dup(0)
@@ -81,6 +87,8 @@ HFILE           dw 0FFFFh               ; DATA XREF: BUFFERINIT+38↓w
 INT22BASE       dw 88h                  ; DATA XREF: DOSTerminateHook+6D↓r
                                         ; INITDOSVARP+78↓r ...
 PDMAADD         dd 0                    ; DATA XREF: SAVESTATE:loc_39CA↓r
+
+; Is DOS INT 21 running?
 PINDOS          dd 0                    ; DATA XREF: BOOTSCHEDULE+38↓r
 PCNTCFLAG       dd 0                    ; DATA XREF: SAVESTATE+42↓r
                                         ; RESTORESTATE+24↓r ...

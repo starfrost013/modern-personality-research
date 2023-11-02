@@ -96,100 +96,103 @@ BOOTDONE        endp
 ; =============== S U B R O U T I N E =======================================
 
 
+; Initial kernel bootstrap functionality.
                 public BOOTSTRAP
 BOOTSTRAP       proc far
-                mov     cs:TOPPDB, es
-                mov     cs:HEADPDB, es
+                mov     cs:TOPPDB, es           ; set segment pointer to top of process data block chain (PDB is DOS2 process information structure)
+                mov     cs:HEADPDB, es          ; same for head
                 mov     word ptr es:42h, 0
                 mov     ax, cx
                 mov     cl, 4
                 shr     ax, cl
-                mov     cs:CPSHRUNK, ax
+                mov     cs:CPSHRUNK, ax         ; CPSHRUNK -> 0x0040
                 mov     bx, sp
                 mov     cl, 4
-                shr     bx, cl
+                shr     bx, cl                  ; * 16
                 mov     ax, ss
                 add     ax, bx
-                mov     cs:SEGINITMEM, ax
+                mov     cs:SEGINITMEM, ax       ; size of SEGINIT in paragraphs? (0x00020)
                 mov     ax, cs
                 mov     bx, 93F0h
-                mov     si, 9670h
+                mov     si, 9670h               ; si->0x0280
                 sub     si, bx
                 mov     cl, 4
-                shr     bx, cl
+                shr     bx, cl                  ; * 16
                 add     ax, bx
-                mov     cs:word_7F8C, bx
-                cli
-                mov     ss, ax
+                mov     cs:word_7F8C, bx        ; 0x093f
+                cli                             ; turn off interrupts
+                mov     ss, ax                  ; set up stack to be kernel internal stack? 
                 assume ss:nothing
                 mov     sp, si
-                sti
+                sti                             ; restore interrupts
                 xor     bp, bp
-                mov     ss:word_93FE, si
-                mov     ss:word_93FC, sp
+                mov     ss:word_93FE, si        ; 0x0280
+                mov     ss:word_93FC, sp        ; 0x0280
                 sub     si, 200h
-                mov     ss:word_93FA, si
-                mov     ax, es:0FEh
-                cmp     ax, 5758h
-                jz      short loc_8076
-                cmp     ax, 5747h
-                jnz     short loc_8081
+                mov     ss:word_93FA, si        ; 0x0080
+                mov     ax, es:0FEh             ; this probably cchecks if windows is already running
+                cmp     ax, 5758h               ; 'WX' (FWINX)
+                jz      short fwinx_found       ; if we found it, jump here
+                cmp     ax, 5747h               ; 'GW' (????)
+                jnz     short get_boot_default_filename          ; if we found it, jump here?
                 inc     cs:FWINX
 
-loc_8076:                               ; CODE XREF: BOOTSTRAP+60↑j
+fwinx_found:                                    ; CODE XREF: BOOTSTRAP+60↑j
                 inc     cs:FWINX
                 jmp     short loc_80AF
 ; ---------------------------------------------------------------------------
                 align 2
 
-loc_807E:                               ; CODE XREF: BOOTSTRAP+CA↓j
+global_init_fail:                               ; CODE XREF: BOOTSTRAP+CA↓j
                 jmp     loc_8296
 ; ---------------------------------------------------------------------------
 
-loc_8081:                               ; CODE XREF: BOOTSTRAP+65↑j
+; This grabs the first boot file from the blob of boot files below,
+; and builds a string with it on the default disk number.
+get_boot_default_filename:                               ; CODE XREF: BOOTSTRAP+65↑j
                 push    ds
-                xor     ax, ax
-                cld
-                mov     es, cs:TOPPDB
-                mov     si, 80h
-                lods    byte ptr es:[si]
-                add     si, ax
-                lea     di, [si+1]
-                push    cs
-                pop     ds
+                xor     ax, ax                  ; zero AX
+                cld                             ; clear string direction flag
+                mov     es, cs:TOPPDB           ; load top of PDB chain
+                mov     si, 80h                 ; get default list of files to be loaded at OS start
+                lods    byte ptr es:[si]        ; load byte
+                add     si, ax                  
+                lea     di, [si+1]              ; load next byte?
+                push    cs                  
+                pop     ds                      
                 assume ds:cseg01
                 mov     cx, 8296h
-                mov     si, 828Bh
-                sub     cx, si
-                mov     ax, cx
-                add     al, 2
-                stosb
-                mov     ah, 19h
-                int     21h             ; DOS - GET DEFAULT DISK NUMBER
-                add     al, 41h ; 'A'
-                mov     ah, 3Ah ; ':'
+                mov     si, offset SZWINPACKFILE               
+                sub     cx, si                  ; get +0x000b (size of "WIN100.BIN" string + drive letter)
+                mov     ax, cx                  
+                add     al, 2                   ; reserve space for drive letter
+                stosb                           
+                mov     ah, 19h                 
+                int     21h                     ; DOS - GET DEFAULT DISK NUMBER
+                add     al, 41h ; 'A'           ; add A: to convert to ASCII
+                mov     ah, 3Ah ; ':'  
                 stosw
-                rep movsb
+                rep movsb                       ; copy Windows Overlay (WIN100.BIN) filename, on default drive.
                 pop     ds
                 assume ds:nothing
 
 loc_80AF:                               ; CODE XREF: BOOTSTRAP+71↑j
                 cld
-                mov     es, cs:TOPPDB
-                mov     ax, es
+                mov     es, cs:TOPPDB           ; restore PDB chain we just trashed
+                mov     ax, es                  
                 add     ax, 10h
-                mov     bx, cs:SEGINITMEM
-                mov     cx, es:2
-                mov     es, bx
+                mov     bx, cs:SEGINITMEM       ; SEGINITMEM is now 95c0 (i guess paragraph address)
+                mov     cx, es:2                ; 0x9FC0
+                mov     es, bx                
                 mov     dx, es:10h
-                push    dx
-                push    bx
-                push    ax
-                push    cx
-                nop
-                push    cs
+                push    dx                      ; 0x0200
+                push    bx                      ; 0x95C0
+                push    ax                      ; 0x1D8B
+                push    cx                      ; 0x9FC0
+                nop 
+                push    cs                      ; kernel code segment
                 call    near ptr GLOBALINIT
-                jcxz    short loc_807E
+                jcxz    short global_init_fail  ; returns cx=0 on failure.
                 mov     cs:HINITMEM, ax
                 call    DEBUGINIT
                 call    INITDOSVARP
@@ -378,107 +381,24 @@ loc_8271:                               ; CODE XREF: BOOTSTRAP+25E↑j
 SZWINPACKFILE   db 'WIN100.BIN',0
 ; ---------------------------------------------------------------------------
 
-loc_8296:                               ; CODE XREF: BOOTSTRAP:loc_807E↑j
+loc_8296:                               ; CODE XREF: BOOTSTRAP:global_init_fail↑j
                                         ; BOOTSTRAP:loc_8157↑j ...
                 mov     al, 1
                 push    ax
                 nop
                 push    cs
                 call    EXITKERNEL
-                push    bx
-                pop     cx
-                push    bx
-                push    sp
-                inc     bp
-                dec     bp
-                db      2Eh
-                inc     sp
-                push    dx
-                push    si
-                add     [bp+di+45h], cl
-                pop     cx
-                inc     dx
-                dec     di
-                inc     cx
-                push    dx
-                inc     sp
-                db      2Eh
-                inc     sp
-                push    dx
-                push    si
-                add     [di+4Fh], cl
-                push    bp
-                push    bx
-                inc     bp
-                db      2Eh
-                inc     sp
-                push    dx
-                push    si
-                add     [si+49h], al
-                push    bx
-                push    ax
-                dec     sp
-                inc     cx
-                pop     cx
-                db      2Eh
-                inc     sp
-                push    dx
-                push    si
-                add     [bp+di+4Fh], dl
-                push    bp
-                dec     si
-                inc     sp
-                db      2Eh
-                inc     sp
-                push    dx
-                push    si
-                add     [bp+di+4Fh], al
-                dec     bp
-                dec     bp
-                db      2Eh
-                inc     sp
-                push    dx
-                push    si
-                add     [bp+4Fh], al
-                dec     si
-                push    sp
-                push    bx
-                db      2Eh
-                inc     si
-                dec     di
-                dec     si
-                add     [bx+44h], al
-                dec     cx
-                db      2Eh
-                inc     bp
-                pop     ax
-                inc     bp
-                add     [di+53h], dl
-                inc     bp
-                push    dx
-                db      2Eh
-                inc     bp
-                pop     ax
-                inc     bp
-                add     [di+53h], cl
-                inc     sp
-                dec     di
-                push    bx
-                inc     sp
-                db      2Eh
-                inc     bp
-                pop     ax
-                inc     bp
-
-loc_8304:                               ; DATA XREF: SLOWBOOT:loc_8412↓o
-                add     [di+53h], cl
-                inc     sp
-                dec     di
-                push    bx
-                db      2Eh
-                inc     bp
-                pop     ax
-                inc     bp
+SZSYSTEMDRV     db 'SYSTEM.DRV',0
+SZKEYBOARDRV    db 'KEYBOARD.DRV',0
+SZMOUSEDRV      db 'MOUSE.DRV',0
+SZDISPLAYDRV    db 'DISPLAY.DRV',0
+SZSOUNDDRV      db 'SOUND.DRV',0
+SZCOMMDRV       db 'COMM.DRV',0
+SZFONTSFON      db 'FONTS.FON',0
+SZGDIEXE        db 'GDI.EXE',0
+SZUSEREXE       db 'USER.EXE',0
+SZMSDOSDEXE     db 'MSDOSD.EXE',0
+SZMSDOSEXE      db 'MSDOS.EXE',0        ; DATA XREF: SLOWBOOT:loc_8412↓o
 ; ---------------------------------------------------------------------------
                 db 0
 ; ---------------------------------------------------------------------------
