@@ -222,33 +222,40 @@ SETTASKQUEUE    endp
 ; =============== S U B R O U T I N E =======================================
 
 
+; Function Name: SetPriority(hTask, nChangeAmount)
+;
+; Purpose: Modifies the priority of task hTask (pointer to which is represented by the hTask handle) by amount nChangeAmount.
+; Priority must be between -15 and 15. Yes, this is a signed value.
+;
+; Notes: Incredibly hacky. They delete the task and re-create it. Wtf?
+
                 public SETPRIORITY
 SETPRIORITY     proc far
-                call    GETTASKHANDLE_VARIANT_UNDOCUMENTED ; KERNEL_32
-                add     bl, es:8
-                cmp     bl, 0E0h
-                jge     short loc_3D4A
-                mov     bl, 0E0h
+                call    GETTASKHANDLE_VARIANT_UNDOCUMENTED ; get the task from hTask, this will fatalexit if the task is wrong
+                add     bl, es:8                    ; bl = old task priority, es:0008 = nChangeAmount
+                cmp     bl, 0E0h                    ; is new priority above or equal to -15?
+                jge     short check_priority_high   ; branch   
+                mov     bl, 0E0h                    ; set it to -15 if it's below -15 
 
-loc_3D4A:                               ; CODE XREF: SETPRIORITY+B↑j
-                cmp     bl, 0Fh
-                jle     short loc_3D51
-                mov     bl, 0Fh
+check_priority_high:                                ; CODE XREF: SETPRIORITY+B↑j
+                cmp     bl, 0Fh                     ; Is priority above 15?
+                jle     short set_priority          ; no, branch
+                mov     bl, 0Fh                     ; now, go
 
-loc_3D51:                               ; CODE XREF: SETPRIORITY+12↑j
-                push    bx
-                inc     bx
-                mov     es:8, bl
-                push    es
-                push    es
-                call    DELETETASK
-                push    ax
-                call    INSERTTASK
-                pop     es
-                dec     byte ptr es:8
-                pop     ax
-                cbw
-                retf    4
+set_priority:                               ; CODE XREF: SETPRIORITY+12↑j
+                push    bx                          ; bx contains task priority
+                inc     bx                          ; increment by 1
+                mov     es:8, bl                    ; nChangeAmount -> new pri 
+                push    es                          ; push ?????? 
+                push    es                          ; push task (why are there two pushes here)
+                call    DELETETASK                  ; delete the entire god damn task
+                push    ax                          ; ax->new process priority for inserttask call
+                call    INSERTTASK                  ; recreate the task
+                pop     es                          ; get new task 
+                dec     byte ptr es:8               ; decrement nChangeAmount by 1 for some reason (we incremented it ealrier)
+                pop     ax                          ; return value from INSERTTASK 
+                cbw                                 ; sign extend it
+                retf    4                           ; ok
 SETPRIORITY     endp
 
 ; =============== S U B R O U T I N E =======================================
@@ -257,6 +264,6 @@ SETPRIORITY     endp
 
                 public GETVERSION
 GETVERSION      proc far                ; CODE XREF: RETTHUNK+6B↓p
-                mov     ax, 301h        ; 0103 = Windows 1.03
+                mov     ax, 301h        ; 0103h = Windows 1.03
                 retf
 GETVERSION      endp

@@ -1,0 +1,16 @@
+PIGSKIN Modification History
+
+Format:
+
+Date    Person  Filelist
+
+	Discussion
+
+-------------------------------------------------------------------------------
+
+05Feb87	rajen
+
+10.2	infoseg.inc - Added an extra field to the local infoseg to indicate
+		      whether the process is part of a 3x box or not. This
+		      can be used by programs like device drivers to determine
+		      what the screen group is

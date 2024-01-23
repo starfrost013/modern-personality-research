@@ -870,7 +870,7 @@ loc_5D54:                               ; CODE XREF: LOCALINIT+13↑j
                 mov     [di+6], dx
                 mov     word ptr [di+16h], offset LOCALNOTIFYDEFAULT
                 mov     word ptr [di+18h], cs
-                mov     word ptr [di+14h], 56E0h
+                mov     word ptr [di+14h], offset loc_56E0
                 mov     word ptr [di+1Ch], 200h
                 clc
                 call    LALIGN

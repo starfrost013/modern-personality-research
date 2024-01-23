@@ -505,30 +505,40 @@ BOOTSTRAP       endp ; sp-analysis failed
 
 ; =============== S U B R O U T I N E =======================================
 
-
+; Function Name: Slowboot
+;
+; Purpose: Boots...slowly...Boots without setup being run (no WIN100.BIN)
+;
+; Parameters: ax -> offset, relative to the top process data block(likely the kernel itself)
+;                            
+;
+; Returns: Probably not until the OS exits (either from an error ror somethnig else)
+;          
+;
+; Notes: Internal only function. Not for C. Possibly needs debugging
 SLOWBOOT        proc far
-                mov     word ptr cs:BOOTEXECBLOCK+6, offset WIN_SHOW
-                mov     word ptr cs:BOOTEXECBLOCK+8, cs
-                mov     es, cs:TOPPDB
-                or      ax, ax
-                jz      short loc_8412
+                mov     word ptr cs:BOOTEXECBLOCK+6, offset WIN_SHOW        
+                mov     word ptr cs:BOOTEXECBLOCK+8, cs                     
+                mov     es, cs:TOPPDB                                       
+                or      ax, ax                                          ; Did the user ask to show an application?
+                jz      short set_default_boot_app                      ; No, set the boot app (shell) to MSDOS.EXE                            
                 mov     di, ax
                 mov     word ptr cs:LPBOOTAPP, di
-                mov     word ptr cs:LPBOOTAPP+2, es
+                mov     word ptr cs:LPBOOTAPP+2, es                     ; copy ES:DI string ptr to lpbootapp
                 xor     ax, ax
                 mov     cx, 0FFFFh
                 cld
-                repne scasb
-                mov     word ptr cs:BOOTEXECBLOCK+2, di
+                repne scasb                                             
+                mov     word ptr cs:BOOTEXECBLOCK+2, di                 ; copy that to bootexecblock
                 mov     word ptr cs:BOOTEXECBLOCK+4, es
                 jmp     short loc_842A
 ; ---------------------------------------------------------------------------
 
-loc_8412:                               ; CODE XREF: SLOWBOOT+13↑j
-                mov     word ptr cs:LPBOOTAPP, (offset loc_8304+1)
+set_default_boot_app:                               ; CODE XREF: SLOWBOOT+13↑j      ; Sets the 
+                mov     word ptr cs:LPBOOTAPP, offset SZMSDOSEXE
                 mov     word ptr cs:LPBOOTAPP+2, cs
                 mov     word ptr cs:BOOTEXECBLOCK+2, 80h
-                mov     word ptr cs:BOOTEXECBLOCK+4, es
+                mov     word ptr cs:BOOTEXECBLOCK+4, es                 ; just use the default (not sure what the significance of this is, DEBUG!)
 
 loc_842A:                               ; CODE XREF: SLOWBOOT+33↑j
                 mov     di, 829Eh
