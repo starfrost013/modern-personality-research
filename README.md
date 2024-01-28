@@ -1,8 +1,6 @@
-# Modern Personality
+# modern:personality - Windows Decompilation
 
-## Research on Multitasking DOS 4.0, OS/2, and 16-bit Windows
+This project attempts to reverse engineer Microsoft Windows 1.x entirely to recompliable code, as well as research it and Multitasking MS-DOS 4.0 ("MT-DOS"). 
 
-This is the sum (as of September 8, 2023) of my research into the development of Multitasking MS-DOS 4.0 and OS/2 1.0 (which really ought to be called "Multitasking MS-DOS 5.0"...) from early 1983 to late 1987. 
-
-The source code dated 1986 or early 1987 is from OS/2 1.0 build 7.68.17, which has kernel and BIOS source code in its slack space. 
-This is a complete mess that grew organically; all IDA databases are 7.7 format, as far as I know. 
+The research repository is located here: [Research Repo](https://github.com/starfrost013/modernpersonality)
+The runtime used to run the legacy toolchain on modern operating systems is here:(https://github.com/starfrost013/modern-personality-runtime)
