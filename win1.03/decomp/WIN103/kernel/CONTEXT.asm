@@ -88,21 +88,33 @@ GETTASKHANDLE_VARIANT_UNDOCUMENTED_2 endp
 
 ; =============== S U B R O U T I N E =======================================
 
+; Function Name: GetTaskHandle
+;
+; Purpose: Gets a handle to a running task.
+;
+; Parameters: ax (optional): A pointer (likely segaddr handle) to a hTask object.
+;                            If zero, gets the handle to the currently running task.
+;
+; Returns: The task handle.
+;          This function failing is a FATAL ERROR, and the OS EXITS.
+;
+; Notes: Internal only function. Not for C. Possibly needs debugging
+
 
 GETTASKHANDLE   proc near               ; CODE XREF: WAITEVENT+8↑p
                                         ; GETTASKHANDLE_VARIANT_UNDOCUMENTED+A↑j ...
-                or      ax, ax
-                jnz     short loc_3CAF
-                mov     ax, cs:CURTDB
+                or      ax, ax                          ; did the user provide a hTask pointer?
+                jnz     short verify_and_return_handle  ; if they did, branch
+                mov     ax, cs:CURTDB                   ; if they didn't, get the current TDB (task data block) segaddr 
 
-loc_3CAF:                               ; CODE XREF: GETTASKHANDLE+2↑j
-                mov     es, ax
-                cmp     word ptr es:7Eh, 4454h
-                jnz     short loc_3CBB
+verify_and_return_handle:                               
+                mov     es, ax                          ; convert to segaddress so it can be referenced as a segment
+                cmp     word ptr es:7Eh, 4454h          ; is 0x7E of the task data block the string "TD"? (same as MDOS4!)
+                jnz     short invalid_task_handle       ; If not, this is considered a fatal error. Branch
                 retn
 ; ---------------------------------------------------------------------------
 
-loc_3CBB:                               ; CODE XREF: GETTASKHANDLE+11↑j
+invalid_task_handle:                               ; CODE XREF: GETTASKHANDLE+11↑j
                 mov     ax, 301h
                 push    ax
                 mov     ax, offset SZERRINVALIDTASKHANDLE ; "GetTaskHandle: Invalid task handle"
@@ -227,6 +239,8 @@ SETTASKQUEUE    endp
 ; Purpose: Modifies the priority of task hTask (pointer to which is represented by the hTask handle) by amount nChangeAmount.
 ; Priority must be between -15 and 15. Yes, this is a signed value.
 ;
+; Returns: The new process priority.
+;
 ; Notes: Incredibly hacky. They delete the task and re-create it. Wtf?
 
                 public SETPRIORITY
@@ -245,22 +259,38 @@ check_priority_high:                                ; CODE XREF: SETPRIORITY+B�
 set_priority:                               ; CODE XREF: SETPRIORITY+12↑j
                 push    bx                          ; bx contains task priority
                 inc     bx                          ; increment by 1
-                mov     es:8, bl                    ; nChangeAmount -> new pri 
-                push    es                          ; push ?????? 
+                mov     es:8, bl                    ; set priority?
+                push    es                          
                 push    es                          ; push task (why are there two pushes here)
                 call    DELETETASK                  ; delete the entire god damn task
-                push    ax                          ; ax->new process priority for inserttask call
+                push    ax                          ; ax->task pointer for inserttask call
                 call    INSERTTASK                  ; recreate the task
                 pop     es                          ; get new task 
                 dec     byte ptr es:8               ; decrement nChangeAmount by 1 for some reason (we incremented it ealrier)
                 pop     ax                          ; return value from INSERTTASK 
-                cbw                                 ; sign extend it
-                retf    4                           ; ok
+                cbw                                 ; sign extend it for calling convention
+                retf    4                           
 SETPRIORITY     endp
 
 ; =============== S U B R O U T I N E =======================================
 ; context.asm?
 ; or maybe ld.asm
+
+; Function Name: GetVersion()
+;
+; Purpose: Returns the operating system version.
+; Windows 1.0 DR5 to 1.01                                               0x1
+; Windows 1.02                                                          0x102
+; Windows 1.03                                                          0x103
+; Windows 1.04                                                          0x104
+; Windows 2.01                                                          0x201
+; Windows 2.02 (from Excel for Windows 2.0 runtime install)             0x202
+; Windows 2.03                                                          0x203 (haven't checked other values)
+; Windows 2.10                                                          0x210 (probably intended to be BCD)
+; Windows 2.11                                                          0x211 (probably intended to be BCD)
+
+; Returns: The new process priority. In Windows 2.01 and above, returns the DOS version and revision when called from assembly, but not in public headers. (used to detect OS/2/DOS5).
+
 
                 public GETVERSION
 GETVERSION      proc far                ; CODE XREF: RETTHUNK+6B↓p

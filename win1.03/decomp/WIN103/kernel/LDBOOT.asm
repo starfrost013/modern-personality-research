@@ -1,12 +1,18 @@
 ; ---------------------------------------------------------------------------
 HINITMEM        dw 0                    ; DATA XREF: BOOTSTRAP+CC↓w
-                                        ; BOOTSTRAP:loc_8271↓r ...
+      
+                                        ; BOOTSTRAP:no_fastboot↓r ...
 SEGINITMEM      dw 0                    ; DATA XREF: BOOTSTRAP+25↓w
                                         ; BOOTSTRAP+B0↓r ...
 CPSHRUNK        dw 0                    ; DATA XREF: BOOTSTRAP+17↓w
                                         ; FINDFREESEG+91↓w ...
+
+; The app to load with Windows (appears to be the shell by default). You can override this. Not sure how...
 LPBOOTAPP       dd 0                    ; DATA XREF: SLOWBOOT+17↓w
                                         ; SLOWBOOT:loc_8412↓w ...
+
+; Memory reserved for various variables that change how Windows initialises.
+; etc...to do this.
 BOOTEXECBLOCK   db 0Eh dup(0)           ; DATA XREF: SLOWBOOT+29↓w
                                         ; SLOWBOOT+41↓w ...
 WIN_SHOW        db    2                 ; DATA XREF: SLOWBOOT↓o
@@ -14,9 +20,17 @@ WIN_SHOW        db    2                 ; DATA XREF: SLOWBOOT↓o
                 db    0
                 db    1
                 db    0
+
+; Name of the kernel module.
 SZKERNELNAME    db 'KERNEL',0
+
+; Debug WIN.INI setting to enable heap checking.
 SZENABLEHEAPCHECKING db 'EnableHeapChecking',0
+
+; Debug WIN.INI setting to "freeze global motion". Not sure what this does.
 SZFREEZEGLOBALMOTION db 'FreezeGlobalMotion',0
+
+; Debug WIN.INI setting to modify the frequency of when the least recently used memory areas are freed.
 SZLRUSWEEPFREQUENCY db 'LRUSweepFrequency',0
 word_7F8C       dw 0                    ; DATA XREF: BOOTSTRAP+39↓w
                                         ; BOOTSTRAP+1B2↓r
@@ -25,8 +39,8 @@ word_7F8C       dw 0                    ; DATA XREF: BOOTSTRAP+39↓w
 
 
 BOOTDONE        proc far                ; CODE XREF: SLOWBOOT+A4↓j
-                mov     ax, 7F4Dh
-                mov     bx, 7F54h
+                mov     ax, offset SZKERNELNAME
+                mov     bx, offset SZENABLEHEAPCHECKING
                 xor     cx, cx
                 push    cs
                 push    ax
@@ -39,8 +53,8 @@ BOOTDONE        proc far                ; CODE XREF: SLOWBOOT+A4↓j
                 mov     es, cs:PGLOBALHEAP
                 assume es:nothing
                 mov     es:0, ax
-                mov     ax, 7F4Dh
-                mov     bx, 7F67h
+                mov     ax, offset SZKERNELNAME
+                mov     bx, offset SZFREEZEGLOBALMOTION
                 xor     cx, cx
                 push    cs
                 push    ax
@@ -52,8 +66,8 @@ BOOTDONE        proc far                ; CODE XREF: SLOWBOOT+A4↓j
                 call    near ptr GETPROFILEINT
                 mov     es, cs:PGLOBALHEAP
                 mov     es:2, ax
-                mov     ax, 7F4Dh
-                mov     bx, 7F7Ah
+                mov     ax, offset SZKERNELNAME
+                mov     bx, offset LRUSWEEPFREQUENCY
                 mov     cx, 0FAh
                 push    cs
                 push    ax
@@ -65,7 +79,7 @@ BOOTDONE        proc far                ; CODE XREF: SLOWBOOT+A4↓j
                 call    near ptr GETPROFILEINT
                 or      ax, ax
                 jz      short loc_7FE6
-                mov     bx, 6922h
+                mov     bx, offset LRUSWEEP
                 push    ax
                 push    cs
                 push    bx
@@ -80,13 +94,13 @@ loc_7FE6:                               ; CODE XREF: BOOTDONE+4B↑j
                 xor     dx, dx
                 mov     ss:7Eh, dx
                 mov     cs:CURTDB, dx
-                mov     cx, 7F31h
+                mov     cx, offset HINITMEM
                 push    cs
                 push    dx
                 push    cx
                 push    dx
                 push    cs
-                mov     ax, 3B0Ch
+                mov     ax, offset BOOTSCHEDULE ; not sure about this one @3b0c but most likely just sets up what GLOBALREALLOC returns to
                 push    ax
                 jmp     near ptr GLOBALREALLOC
 BOOTDONE        endp
@@ -144,7 +158,7 @@ fwinx_found:                                    ; CODE XREF: BOOTSTRAP+60↑j
                 align 2
 
 global_init_fail:                               ; CODE XREF: BOOTSTRAP+CA↓j
-                jmp     loc_8296
+                jmp     boot_failure_01
 ; ---------------------------------------------------------------------------
 
 ; This grabs the first boot file from the blob of boot files below,
@@ -162,7 +176,7 @@ get_boot_default_filename:                               ; CODE XREF: BOOTSTRAP+
                 pop     ds                      
                 assume ds:cseg01
                 mov     cx, 8296h
-                mov     si, offset SZWINPACKFILE               
+                mov     si, offset SZWINPACKFILE; load win100.bin (fastboot) string          
                 sub     cx, si                  ; get +0x000b (size of "WIN100.BIN" string + drive letter)
                 mov     ax, cx                  
                 add     al, 2                   ; reserve space for drive letter
@@ -186,27 +200,36 @@ loc_80AF:                               ; CODE XREF: BOOTSTRAP+71↑j
                 mov     es, bx                
                 mov     dx, es:10h
                 push    dx                      ; 0x0200
-                push    bx                      ; 0x95C0
+                push    bx                      ; 0x95C0 (SEGINITMEM Location)
                 push    ax                      ; 0x1D8B
                 push    cx                      ; 0x9FC0
                 nop 
                 push    cs                      ; kernel code segment
-                call    near ptr GLOBALINIT
+                call    near ptr GLOBALINIT     ; initialise global component of memory manager 
                 jcxz    short global_init_fail  ; returns cx=0 on failure.
                 mov     cs:HINITMEM, ax
-                call    DEBUGINIT
-                call    INITDOSVARP
-                mov     bx, 3FC5h
+                call    DEBUGINIT               ; Initialise debug subsystem
+                call    INITDOSVARP             ; Get information about the version of DOs we are running on.
+                mov     bx, offset EXITKERNEL   ; load PEXITPROC  with the address of EXITKERNEL
                 mov     word ptr cs:PEXITPROC, bx
                 mov     word ptr cs:PEXITPROC+2, cs
                 push    ds
                 mov     ax, cs
                 mov     ds, ax
                 assume ds:cseg01
-                mov     si, 1Eh
+                ; set up the 8087 control word
+                ; set it to 0x001E (0b0000000000011110):
+                ; bit15-13: ignored
+                ; bit12 (Infinity Control): Projective Infinity
+                ; bit11-10: (Rounding Control): Round to Nearest 
+                ; bit8-9 (Precision Control): Single precision (32-bit)
+                ; bit1-7 (Exception Mask): Exceptions masked except "Inexact" and "Underflow" (I think?)
+                ; bit0 (Interrupt Mask): Interrupts not masked
+                mov     si, 1Eh                 
+                ; initialise the intel 8087
                 fninit
-                fnstcw  word ptr [si]
-                jmp     short $+2
+                fnstcw  word ptr [si]           ; send control word to 8087
+                jmp     short $+2               ; go to loc_80fb
 ; ---------------------------------------------------------------------------
 
 loc_80FB:                               ; CODE XREF: BOOTSTRAP+EF↑j
@@ -261,7 +284,7 @@ loc_8109:                               ; CODE XREF: BOOTSTRAP+F9↑j
                 jnz     short loc_815A
 
 loc_8157:                               ; CODE XREF: BOOTSTRAP+166↓j
-                jmp     loc_8296
+                jmp     boot_failure_01
 ; ---------------------------------------------------------------------------
 
 loc_815A:                               ; CODE XREF: BOOTSTRAP+136↑j
@@ -293,7 +316,7 @@ loc_815A:                               ; CODE XREF: BOOTSTRAP+136↑j
                 call    LOADSEGMENT
                 or      ax, ax
                 jnz     short loc_81A9
-                jmp     loc_8296
+                jmp     boot_failure_01
 ; ---------------------------------------------------------------------------
 
 loc_81A9:                               ; CODE XREF: BOOTSTRAP+19A↑j
@@ -361,13 +384,13 @@ loc_81C7:                               ; CODE XREF: BOOTSTRAP+1BA↑j
                 mov     es, cs:SEGINITMEM
                 assume es:nothing
                 cmp     word ptr es:0Ah, 0
-                jnz     short loc_8271
-                mov     ax, 7F8Eh
+                jnz     short no_fastboot
+                mov     ax, offset BOOTDONE                 ; function to run after fastboot
                 push    ax
-                jmp     FASTBOOT
+                jmp     FASTBOOT                            ; unpack win100.bin              
 ; ---------------------------------------------------------------------------
 
-loc_8271:                               ; CODE XREF: BOOTSTRAP+25E↑j
+no_fastboot:                               ; CODE XREF: BOOTSTRAP+25E↑j
                 push    cs:HINITMEM
                 nop
                 push    cs
@@ -381,13 +404,13 @@ loc_8271:                               ; CODE XREF: BOOTSTRAP+25E↑j
 SZWINPACKFILE   db 'WIN100.BIN',0
 ; ---------------------------------------------------------------------------
 
-loc_8296:                               ; CODE XREF: BOOTSTRAP:global_init_fail↑j
+boot_failure_01:                               ; CODE XREF: BOOTSTRAP:global_init_fail↑j
                                         ; BOOTSTRAP:loc_8157↑j ...
-                mov     al, 1
+                mov     al, 1           ; error code
                 push    ax
                 nop
-                push    cs
-                call    EXITKERNEL
+                push    cs              ; restore code seg
+                call    EXITKERNEL      ; go back to dos
 SZSYSTEMDRV     db 'SYSTEM.DRV',0
 SZKEYBOARDRV    db 'KEYBOARD.DRV',0
 SZMOUSEDRV      db 'MOUSE.DRV',0
@@ -409,7 +432,7 @@ loc_830F:                               ; CODE XREF: SLOWBOOT+51↓p
                 mov     bp, sp
                 push    si
                 push    di
-                xor     ax, ax
+                xor     ax, ax          ; ax->0
                 push    cs
                 push    word ptr [bp+4]
                 push    ax
@@ -417,9 +440,9 @@ loc_830F:                               ; CODE XREF: SLOWBOOT+51↓p
                 nop
                 push    cs
                 call    near ptr LOADMODULE
-                cmp     ax, 2
+                cmp     ax, 2                   ; LoadModule Error Code 2 - Invalid Binary
                 jnz     short loc_8360
-                cmp     word ptr [bp+4], 82FAh
+                cmp     word ptr [bp+4], offset SZMSDOSDEXE ; "MSDOSD.EXE"
                 jnb     short loc_8396
                 mov     ax, 401h
                 push    ax
@@ -437,7 +460,7 @@ SZBOOTCANNOTFINDFILE db 'BOOT: Unable to find file - ',0
 ; ---------------------------------------------------------------------------
 
 loc_835D:                               ; CODE XREF: BOOTSTRAP+333↑j
-                jmp     short loc_83C5
+                jmp     short boot_failure_02
 ; ---------------------------------------------------------------------------
                 align 2
 
@@ -460,7 +483,7 @@ SZBOOTINVALIDEXE db 'BOOT: Invalid .EXE file - ',0
 ; ---------------------------------------------------------------------------
 
 loc_8393:                               ; CODE XREF: BOOTSTRAP+36B↑j
-                jmp     short loc_83C5
+                jmp     short boot_failure_02
 ; ---------------------------------------------------------------------------
                 align 2
 
@@ -476,16 +499,16 @@ loc_8396:                               ; CODE XREF: BOOTSTRAP+321↑j
                 push    cs
                 push    word ptr [bp+4]
                 call    KERNELERROR
-                jmp     short loc_83C5
+                jmp     short boot_failure_02
 ; ---------------------------------------------------------------------------
 SZBOOTCANNOTLOAD db 'BOOT: Unable to load - ',0
                                         ; DATA XREF: BOOTSTRAP+394↑o
                 db 24h
 ; ---------------------------------------------------------------------------
 
-loc_83C5:                               ; CODE XREF: BOOTSTRAP:loc_835D↑j
+boot_failure_02:                               ; CODE XREF: BOOTSTRAP:loc_835D↑j
                                         ; BOOTSTRAP:loc_8393↑j ...
-                cmp     word ptr [bp+4], 82FAh
+                cmp     word ptr [bp+4], offset SZMSDOSDEXE ; "MSDOSD.EXE"
                 jnb     short loc_83D5
                 mov     ax, 1
                 push    ax
@@ -535,13 +558,13 @@ SLOWBOOT        proc far
 ; ---------------------------------------------------------------------------
 
 set_default_boot_app:                               ; CODE XREF: SLOWBOOT+13↑j      ; Sets the 
-                mov     word ptr cs:LPBOOTAPP, offset SZMSDOSEXE
+                mov     word ptr cs:, offset SZMSDOSEXE
                 mov     word ptr cs:LPBOOTAPP+2, cs
                 mov     word ptr cs:BOOTEXECBLOCK+2, 80h
                 mov     word ptr cs:BOOTEXECBLOCK+4, es                 ; just use the default (not sure what the significance of this is, DEBUG!)
 
 loc_842A:                               ; CODE XREF: SLOWBOOT+33↑j
-                mov     di, 829Eh
+                mov     di, offset SZSYSTEMDRV ; "SYSTEM.DRV"
 
 loc_842D:                               ; CODE XREF: SLOWBOOT+62↓j
                 push    di
@@ -571,13 +594,13 @@ loc_844F:                               ; CODE XREF: SLOWBOOT+6B↑j
                 xor     ax, ax
                 cld
                 repne scasb
-                cmp     di, 8305h
+                cmp     di, offset SZMSDOSEXE ; "MSDOS.EXE"
                 jb      short loc_844F
                 call    near ptr INITFWDREF
                 call    ENABLEINT21
 
 loc_8469:                               ; CODE XREF: SLOWBOOT+70↑j
-                mov     ax, 7F3Bh
+                mov     ax, offset BOOTEXECBLOCK
                 push    word ptr cs:LPBOOTAPP+2
                 push    word ptr cs:LPBOOTAPP
                 push    cs
@@ -600,13 +623,15 @@ loc_8484:                               ; CODE XREF: SLOWBOOT+A2↑j
                 push    word ptr cs:LPBOOTAPP
                 call    KERNELERROR
                 jmp     short near ptr LPRETURNONSLOWBOOTERROR
-SLOWBOOT        endp ; sp-analysis failed
+
 
 ; ---------------------------------------------------------------------------
 SZBOOTCANNOTLOADFILE db 'BOOT: unable to load - ',0,'$'
                                         ; DATA XREF: SLOWBOOT+AB↑o
-LPRETURNONSLOWBOOTERROR db 0E9h, 0DEh   ; CODE XREF: SLOWBOOT+BD↑j
-                db 0FDh
+LPRETURNONSLOWBOOTERROR    ; CODE XREF: SLOWBOOT+BD↑j
+                jmp     boot_failure_01
+SLOWBOOT        endp ; sp-analysis failed
+
 word_84B8       dw 0                    ; DATA XREF: FINDFREESEG:loc_853E↓r
                                         ; FINDFREESEG+8C↓w ...
                 db 0Eh dup(0)

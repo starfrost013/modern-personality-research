@@ -1,7 +1,8 @@
 ;
-; The OpenWindows Project
-; © 2023 starfrost          October 30, 2023
-;
+; modern:personality
+; © 2023-2024 starfrost         October 30, 2023
+;                               January 27, 2024
+ 
 ; KDATA.ASM : KERNEL global variables
 
 ;
@@ -35,10 +36,8 @@
 ; Offset in the file: 0B90h  Length: 9890h
 ; Attributes  (0040): CODE Preloaded DPL: 0
 
-                .686p
-                .mmx
-                .model flat
-
+                ;.model flat
+                .model large ; ?????? it could also be compact.
 ; ===========================================================================
 
 ; Segment type: Pure code
@@ -59,10 +58,11 @@ HTHUNKS         dw 0                    ; DATA XREF: MAKEPROCINSTANCE+6↓r
                                         ; MAKEPROCINSTANCE+1E↓r ...
 HHANDLE         dw 0                    ; DATA XREF: PATCHTHUNKS+B↓r
                                         ; PATCHTHUNKS+109↓r ...
+
 ; The top of the Process Data Block (PDB) list.
 TOPPDB          dw 0                    ; DATA XREF: CREATETASK+9A↓r
                                         ; ENABLEDOS+28↓r ...
-; The head of the PDB list.
+; The current head of the PDB list.
 HEADPDB         dw 0                    ; DATA XREF: CREATETASK+B2↓w
                                         ; CLOSEOPENFILES+65↓r ...
 TOPSIZEPDB      db 2 dup(0)
@@ -108,21 +108,39 @@ LASTDRIVESWAPPED db 0                   ; DATA XREF: PROMPT+3C↓w
                                         ; GETLASTDISKCHANGE+2↓w
 FBREAK          db 0                    ; DATA XREF: ENABLEDOS+1C↓w
                                         ; DISABLEDOS+23↓r
+; Holds the major version of DOS that Windows is running on. 
 DOS_VERSION     db 0                    ; DATA XREF: GETTEMPFILENAME+AB↓r
                                         ; CLOSEOPENFILES+8↓r ...
+
+; Holds the minor version of DOS that Windows is running on.
 DOS_REVISION    db 0                    ; DATA XREF: sub_4338+55↓r
                                         ; INT24HANDLER+C1↓r ...
+
+; Holds the MS-DOS OEM number.
+; In the early days of DOS, you could get your OEM copy of DOS "personalised" with an OEM ID that was assigned
+; by microsoft. Very few bothered after the first few years, but Windows 1.0 is early enough
+; to store it here. Woo!
 DOS_OEM         db 0                    ; DATA XREF: INITDOSVARP+29↓w
 FINT21          db 0                    ; DATA XREF: OPENFILE+B2↓r
                                         ; OPENFILE+150↓r ...
 FEVENT          db 0
+
+; Stores keyboard information
+; THIS IS A STRUCT, MAKE IT ONE!
+; 0x00-0x01 and 0x02-0x03 are used to both determine if this is a "far east"
 KEYINFO         db 0,0,0,0,0,0,0,0,0,0,0,0 ; DATA XREF: ISKANJI+8↓r
                                         ; ISKANJI:loc_53E5↓r
                                         ; KEYINFO IS A STRUCT
+
+; set to 1 (using inc) by CHECKFAREAST if keyinfo[1] <= keyinfo[0]
+; or keyinfo[3] > keyinfo[2]
 FFAREAST        db 0                    ; DATA XREF: ANSIPREV+8↓r
                                         ; ISKANJI↓r ...
 PMBOXPROC       dd 0                    ; DATA XREF: SHOWDIALOGBOX2+12↓r
                                         ; INITFWDREF+62↓w ...
+
+; Holds the segment-offset address of the function used to exit the kernel.
+; Set to EXITKERNEL function pointer during init.
 PEXITPROC       dd 0                    ; DATA XREF: DOSTerminateHook+C8↓r
                                         ; BOOTSTRAP+D9↓w ...
 PSYSPROC        dd 0                    ; DATA XREF: ISFLOPPY+5↓r
@@ -143,19 +161,35 @@ PREVINT3FPROC   dd 0                    ; DATA XREF: EXITKERNEL+D↓r
                                         ; PDB_CALL_SYSTEM_ENTRY+9↓r ...
 PREVBCON        dd 0                    ; DATA XREF: ENABLEDOS+54↓w
                                         ; DISABLEDOS+3E↓r ...
+
+; 1 if the kernel is still initialising, 0 if it isn't. Set to 0 during INITTASK phase, 1 by default.
 FBOOTING        db 1                    ; DATA XREF: ALLOCSEG+16↓r
                                         ; ADDMODULE+35↓r ...
 CDEVAT          db 0                    ; DATA XREF: INT24HANDLER+1D↓w
                                         ; INT24HANDLER+5B↓r ...
+
+; stores the previous MS-DOS INT 24 error.
 OLDERRNO        dw 0                    ; DATA XREF: INT24HANDLER+78↓w
                                         ; INT24HANDLER+EA↓r
 OUTBUF          db 32h dup(0)
 BUFPOS          dw 0                    ; DATA XREF: INT24HANDLER+44↓w
                                         ; APPENDFIRST↓w ...
+; Buffer for reading from the user profile (WIN.INI file)
 USERPROBUF      db 50h dup(0)
+
+; Filename of the user profile. In Windows 1.0 DR5 and Windows 1.0 Alpha,
+; this file was called USER.PRO
 SZUSERPRO       db 'WIN.INI',0
+
+; Start of the message telling you to insert a disk if, (usually in floppy-based Windows installations),
+; it can't find a file
 SZDISKMSG1      db 'Insert ',0
+
+; Second part of the aforementioned message.
 SZDISKMSG2      db ' disk in drive '
+
+; Placeholder drive letter for (usually in floppy-based Windows installations) telling you to insert a disk
+; when it can't find a file
 DRVLET          db 'X:',0               ; DATA XREF: PROMPT+E↓r
                                         ; PROMPT+39↓w
                                         ; placeholder

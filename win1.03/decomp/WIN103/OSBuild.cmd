@@ -11,6 +11,7 @@ echo Building Kernel...
 msdos -d -e -m make kernel\kernel.mak
 
 goto :eof
+
 :echobuild
 ::terrible!!!!
 <nul set /p="[BUILD]: "

@@ -224,7 +224,7 @@ GETSTRINGPTR    endp
 CALCMAXNRSEG    proc near               ; CODE XREF: ADDMODULE+43↑p
                                         ; DELMODULE+3F↑p ...
                 xor     ax, ax
-                mov     al, cs:FBOOTING
+                mov     al, cs:FBOOTING ; turn off the "is system booting?" flag
                 or      ax, ax
                 jnz     short locret_2558
                 push    cs:HEXEHEAD

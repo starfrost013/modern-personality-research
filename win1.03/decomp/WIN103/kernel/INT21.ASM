@@ -1,11 +1,25 @@
+; Modern:Personality
+; Original code © 1982-1986 Microsoft Corporation
+; Time wasted reverse engineering © 2023-2024 starfrost
+;
+; int21.asm         January 27, 2024
+; This code traps, detours, replaces, thunks, and does various incredibly cursed things to the Interrupt 21h DOS API.
 
 ; External Entry #102 into the Module
 ; Attributes (0001): Fixed Exported
-;
 
 ; =============== S U B R O U T I N E =======================================
 
 
+; Function Name: dos3call
+;
+; Purpose: Calls an MS-DOS 3.x API
+;
+; Parameters: regs -> parameters for INT21 call                         
+;
+; Returns: Whatever the DOS API call returned
+;
+; Notes: This function is called DOS3CALL as it is opposed to a call going out to Multitasking MS-DOS 4.0 (the early protected mode builds) or OS/2 aka Multitasking MS-DOS 5.0, which would be handled using static linking.
                 public DOS3CALL
 DOS3CALL        proc far
                 int     21h             ; KERNEL_102
@@ -19,7 +33,15 @@ DOS3CALL        endp
 
 ; =============== S U B R O U T I N E =======================================
 
-
+; Function Name: NETBIOSCALL
+;
+; Purpose: Calls a NetBIOS call
+;
+; Parameters: regs -> parameters for NETBIOS call                         
+;
+; Returns: Whatever the DOS API call returned
+;
+; Notes: This function is called DOS3CALL as it is opposed to a call going out to Multitasking MS-DOS 4.0 (the early protected mode builds) or OS/2 aka Multitasking MS-DOS 5.0, which would be handled using static linking.
                 public NETBIOSCALL
 NETBIOSCALL     proc far
                 int     5Ch             ; KERNEL_103
@@ -35,6 +57,13 @@ word_3D74       dw 0                    ; DATA XREF: INT21HANDLER+25↓w
                 db 0
                 db 0
                 db 0
+
+; TODO: Convert to STRUCTURE
+; three byte structure
+; 0         start
+; then a series of 3 byte entries
+; 1         BYTE        function number in AH reg
+; 2         WORD        pointer to function within this code segment that handles it when called within Windows
 INT21_HOOK_TABLE db 0                   ; DATA XREF: INT21HANDLER+A4↓w
                                         ; INT21HANDLER:loc_413F↓r ...
                                         ; Int 21h hook table. Re-implements DOS API for windows use.
@@ -160,7 +189,9 @@ INT21_HOOK_TABLE db 0                   ; DATA XREF: INT21HANDLER+A4↓w
                 dw offset DOSTerminateHook
                 db 31h                  ; Int 21/AH=31h - DOS 2+ - TERMINATE AND STAY RESIDENT
                 dw offset DOSTSRHook
-byte_3E0F       db 0                    ; DATA XREF: INT21HANDLER+3↓w
+; Stores the last value of AH (and therefore the most recently called "major" INT21 function number)  sent to INT21HANDLER.
+; Has no other purpose.
+LAST_INT21_FUNCTION_NUMBER       db 0                    ; DATA XREF: INT21HANDLER+3↓w
                 dw offset loc_4296
                 db 0
                 db 0
@@ -549,7 +580,7 @@ arg_0           = word ptr  0Ah
                 push    word ptr ds:3D76h
                 push    word ptr ds:3D74h
                 push    ds
-                mov     word ptr ds:3D76h, 408Eh
+                mov     word ptr ds:3D76h, offset INT21HANDLER
                 push    word ptr ds:3D76h
                 mov     ds, word ptr ds:3D78h
                 sti
@@ -560,31 +591,57 @@ PDB_CALL_SYSTEM_ENTRY endp ; sp-analysis failed
 
 ; =============== S U B R O U T I N E =======================================
 
-
+; Function Name: Int27Handler
+;
+; Purpose: Handles INT 27 (legacy, DOS 1.x, Terminate and Stay Resident function) 
+;
+; Parameters: None                     
+;
+; Returns: See Int21Handler
+;
+; Notes: Simply calls INT21HANDLER with function number 31 (Terminate and Stay Resident)
 INT27HANDLER    proc near               ; DATA XREF: ENABLEINT21+2B↑o
-                mov     ax, 3100h
-                jmp     short INT21HANDLER
+                mov     ax, 3100h               ; set up DOS API number to 31h (Terminate and Stay Resident)
+                jmp     short INT21HANDLER      ; call DOS API thunk handler
 INT27HANDLER    endp
 
 
 ; =============== S U B R O U T I N E =======================================
 
-
+; Function Name: Int20Handler
+;
+; Purpose: Handles INT 20 (legacy, DOS 1.x, Terminate function) 
+;
+; Parameters: CS - Code segment of program to terminate. (PSP must be at zero)  
+;                      
+; Returns: See Int21Handler
+;
+; Notes: Simply calls INT21HANDLER with function number 0 (Legacy Terminate)
 INT20HANDLER    proc near
-                xor     ax, ax
+                xor     ax, ax                  ; set ax to 0 (INT 21h,ah=0) DOS 1.x terminate program
 INT20HANDLER    endp
 
 
 ; =============== S U B R O U T I N E =======================================
 
 
+; Function Name: Int21Handler
+;
+; Purpose: Handles Windows' insane trapping of MS-DOS INT 21h functions
+;
+; Parameters: ah,al,bh,bl... = Int21 Function Parameters 
+;                      
+; Returns: To be determine
+;
+; Notes: A lot of crazy shit is done here.
+;        What does this do when it's run after a DISABLEINT21 call???
 INT21HANDLER    proc near               ; CODE XREF: INT27HANDLER+3↑j
                                         ; INT21HANDLER:loc_415B↓j
                                         ; DATA XREF: ...
                 inc     bp
                 push    bp
                 push    ds
-                mov     cs:byte_3E0F, ah
+                mov     cs:LAST_INT21_FUNCTION_NUMBER, ah
                 mov     bp, cs:word_3D72
                 sub     bp, 3
 

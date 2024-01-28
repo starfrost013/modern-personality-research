@@ -347,22 +347,31 @@ INITFWDREF      endp ; sp-analysis failed
 
 ; Unreferenced, dead code
 
+; Function Name: CheckFarEast
+;
+; Purpose: Checks if the operating system is running under a "far east" (Korean, Japanese, etc) locale.
+;
+; Parameters: None                          
+;
+; Returns: None. Internal FFAREAST kernel variable incremented (from 0) if true.
+;
+; Notes: Appears to be dead code (Check Win1.02, GDI and USER!)
 CHECKFAREAST    proc near               ; DATA XREF: INITFWDREF+CE↑o
-                mov     si, 55h ; 'U'
+                mov     si, offset KEYINFO ; 'U'   ; load first word of KEYINFO
                 lodsw
-                cmp     al, ah
-                jbe     short loc_8EF5
-                lodsw
-                cmp     al, ah
-                ja      short loc_8EF9
+                cmp     al, ah          ; is the second byte of keyinfo lower or equal to the first?
+                jbe     short is_far_east   ; if so, branch, set far est
+                lodsw                   ; check second word
+                cmp     al, ah          ; is the fourth byte of keyinfo above the third?
+                ja      short far_east_check_done
 
-loc_8EF5:                               ; CODE XREF: CHECKFAREAST+6↑j
-                inc     FFAREAST
+is_far_east:                               ; CODE XREF: CHECKFAREAST+6↑j
+                inc     FFAREAST        ; set ffareast
 
-loc_8EF9:                               ; CODE XREF: CHECKFAREAST+B↑j
-                pop     di
+far_east_check_done:                               ; CODE XREF: CHECKFAREAST+B↑j
+                pop     di              ; restore 
                 pop     si
-                retn
+                retn                    ; go 
 CHECKFAREAST    endp ; sp-analysis failed
 
 

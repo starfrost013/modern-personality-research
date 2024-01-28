@@ -1,9 +1,23 @@
 ; ---------------------------------------------------------------------------
                 db 6 dup(0)
 
+;
+; LDFASTB.ASM
+;
+; Implements fast-boot. Fast boot is a method of boo
+;
+
 ; =============== S U B R O U T I N E =======================================
 
-; Attributes: bp-based frame
+; Function Name: Fastboot
+;
+; Purpose: Boots fast, without forward references.
+;
+; Parameters: ax -> function to run after                           
+;
+; Returns: KERNELERROR called and system exits if boot fails. Calls the function pointer (relative to current code segment) in AX if boot succeeds.
+;
+; Notes: Internal only function. Not for C. Possibly needs debugging
 
 FASTBOOT        proc near               ; CODE XREF: BOOTSTRAP+264↑j
 
@@ -506,7 +520,7 @@ loc_8B65:                               ; CODE XREF: FASTBOOT+433↓j
                 xor     dx, dx
                 test    word ptr es:0Ch, 8000h
                 jnz     short loc_8B8A
-                mov     bx, 7F3Bh
+                mov     bx, offset BOOTEXECBLOCK
                 mov     dx, cs
 
 loc_8B8A:                               ; CODE XREF: FASTBOOT+440↑j
@@ -523,7 +537,7 @@ loc_8B8A:                               ; CODE XREF: FASTBOOT+440↑j
 loc_8B97:                               ; CODE XREF: FASTBOOT+423↑j
                 cmp     word ptr cs:LPBOOTAPP+2, 0
                 jz      short loc_8BB3
-                mov     bx, 7F3Bh
+mov             bx, offset BOOTEXECBLOCK
                 push    word ptr cs:LPBOOTAPP+2
                 push    word ptr cs:LPBOOTAPP
                 push    cs

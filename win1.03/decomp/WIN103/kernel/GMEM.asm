@@ -470,10 +470,10 @@ GINIT           proc near               ; CODE XREF: GLOBALINIT:loc_934C↓p
                 lea     di, [si+2]
                 and     di, 0FFFEh
                 add     cx, 0Fh
-                shr     cx, 1
-                shr     cx, 1
-                shr     cx, 1
-                shr     cx, 1
+                shr     cx, 1   ; *2
+                shr     cx, 1   ; *4
+                shr     cx, 1   ; *8
+                shr     cx, 1   : 16
                 sub     cx, dx
                 neg     cx
                 and     cl, 0FEh
