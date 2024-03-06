@@ -1,0 +1,284 @@
+##############
+ 
+windows $ ls
+gdi      iris     iris.rel kernel   libw     oem      user
+ 
+windows $ find . -name kernel.def
+./iris/kernel.def
+./kernel/retail/kernel.def
+./kernel/kernel.def
+ 
+windows $ diff iris/kernel.def kernel/kernel.def
+5c5
+< STUB '..\IRIS\KERNSTUB.EXE'
+---
+> STUB 'KERNSTUB.EXE'
+160,161c160,161
+<      ENABLEKERNEL        @124
+<      DISABLEKERNEL       @125
+---
+>      DUMMY20       @124
+>      DUMMY21       @125
+165d164
+< 
+ 
+##############
+ 
+The difference seems to be in int21.asm:
+ 
+windows $ diff iris/int21.asm kernel/int21.asm
+9d8
+< include newexe.inc
+15d13
+< externNP INT3FHandler
+46,47d43
+< externW savedPDB
+< externB graphics
+49d44
+< externD <pMouseTermProc,pKeyboardTermProc,pSystemTermProc>
+138,139d132
+< GraphicPassThroughFunctions db 02h,09h,06h,0bh,07h,08h,0ah,0ch,01h,0
+< 
+142,179d134
+< 
+< ;
+< ; If this is the first time through and we are in NON-graphics mode,
+< ; plug the console-related entries so that they are all pass-through.
+< ;
+< 
+<      cmp    byte ptr cs:GraphicPassThroughFunctions,0
+<      je     gx1
+<      cmp    cs:graphics,0
+<      jne    gx0
+< 
+<      push   si
+<      push   di
+<      mov    bx,codeOffset PassOnThrough
+<      mov    si,codeOffset DosTrap1
+< glp0: cmp    word ptr cs:[si+1],bx
+<      je     gdn
+<      mov    al,cs:[si]
+<      add    si,3
+<      mov    di,codeOffset GraphicPassThroughFunctions
+< glp1: mov    ah,cs:[di]
+<      inc    di
+<      or     ah,ah
+<      jz     glp0
+<      cmp    ah,al
+<      jne    glp1
+<      mov    word ptr cs:[si-2],bx
+<      jmp    glp0
+< gdn: pop    di
+<      pop    si
+< 
+< gx0: mov    byte ptr cs:GraphicPassThroughFunctions,0
+< gx1:
+< 
+< ;
+< ; Enable DOS
+< ;
+< 
+211,212d165
+<      cmp    cs:graphics,0        ; is keyboard driver present?
+<      jz     ends1                ; no, pass on through
+265d217
+<         pushf
+335,450d286
+< ;**
+< ;
+< ; DisableKernel
+< ;
+< ;    This call is provided as a Kernel service to applications that
+< ;    wish to totally unhook Windows in order to do something radical
+< ;    such as save the state of the world and restore it at a later
+< ;    time.  This is similar in many ways to the way OLDAPP support
+< ;    works, with the addition that it also unhooks the kernel.
+< ;
+< ;   ENTRY:
+< ;
+< ;   EXIT:
+< ;    Kernel hooks are removed
+< ;
+< ;   USES:
+< ;
+< 
+< cProc DisableKernel,<PUBLIC,FAR>,<si,di>
+< cBegin
+< 
+<      mov    ah,51h
+<      int    21h
+<      mov    cs:savedPDB,bx
+< 
+<      xor    ax,ax
+<      mov    es,ax
+<      mov    bx,3Fh*4
+<      mov    ax,word ptr cs:[prevInt3Fproc][0]
+<      mov    es:[bx][0],ax
+<      mov    ax,word ptr cs:[prevInt3Fproc][2]
+<      mov    es:[bx][2],ax
+< 
+<      cmp    word ptr cs:[prevInt21Proc][2],0
+<      je     nodisable
+<      call   DisableInt21
+< nodisable:
+<      mov    ax,0C00h             ; make GabeN happy by flushing...
+<      int    21h                  ; ...the input buffer
+<      mov    dx,cs:[HeadPDB]
+< exk1: mov    es,dx
+< 
+<      mov    bx,dx
+<      mov    ah,50h               ; point to PDB
+<      int    21h
+< 
+<      mov    cx,20
+<      cmp    cs:DOS_Version,3     ; under 3.x, get count from JFN
+<      jne    exk2
+<      mov    cx,es:[PDB_JFN_Length]
+< exk2: mov    bx,cx                ; close all the file handles
+<      dec    bx
+<      cmp    bx,5                 ; console-related handle?
+<      jb     exk4                 ; yup
+<      mov    ah,3Eh
+<      int    21h
+< exk4: loop   exk2
+< 
+<      mov    dx,es:[PDB_Chain]    ; move to next PDB in chain
+<      or     dx,dx
+<      jnz    exk1
+< 
+<      les    bx,cs:[pSftLink]
+<      mov    cx,es
+<      jcxz   NoSft
+<      mov    word ptr es:[bx][0],-1
+<      mov    word ptr es:[bx][2], 0
+< NoSft:
+<      mov    bx,cs:[topPDB]       ; set to initial DOS task PDB
+<      mov    ah,50h               ; set PDB function
+<      int    21h
+< 
+< cEnd
+< 
+< 
+< ;**
+< ;
+< ; EnableKernel
+< ;
+< ;    This call is provided to restore the world after a DisableKernel.
+< ;
+< ;   ENTRY:
+< ;
+< ;   EXIT:
+< ;    Kernel hooks are restored
+< ;
+< ;   USES:
+< ;
+< 
+< cProc EnableKernel,<PUBLIC,FAR>,<si,di>
+< cBegin
+< 
+< ; Install loader interrupt routine
+< 
+<      xor    ax,ax
+<      mov    es,ax
+<      mov    bx,INTVECTOR*4
+<      mov    ax,codeOffset INT3FHandler
+<      xchg   es:[bx][0],ax
+<      mov    word ptr cs:[prevInt3Fproc][0],ax
+<      mov    ax,cs
+<      xchg   es:[bx][2],ax
+<      mov    word ptr cs:[prevInt3Fproc][2],ax
+< 
+< ; Enable INT 21 hooks
+< 
+<      cCall  EnableInt21
+< 
+< ; Restore PDB
+< 
+<      mov    bx,cs:savedPDB
+<      mov    ah,50h
+<      int    21h
+< 
+< cEnd
+< 
+457,475c293,310
+< ; Call driver termination procs, just to make sure that they have removed
+< ; their interrupt vectors.
+< 
+<      push   si
+<      mov    ax,word ptr cs:[pMouseTermProc]
+<      or     ax,word ptr cs:[pMouseTermProc+2]
+<      jz     trm0
+<      call   cs:[pMouseTermProc]
+< trm0: mov    ax,word ptr cs:[pKeyboardTermProc]
+<      or     ax,word ptr cs:[pKeyboardTermProc+2]
+<      jz     trm1
+<      call   cs:[pKeyboardTermProc]
+< trm1: mov    ax,word ptr cs:[pSystemTermProc]
+<      or     ax,word ptr cs:[pSystemTermProc+2]
+<      jz     trm2
+<      call   cs:[pSystemTermProc]
+< trm2: pop    si
+< 
+< ; Close open files and unhook kernel hooks
+---
+>         xor     ax,ax
+>         mov     es,ax
+>         mov     bx,3Fh*4
+>         mov     ax,word ptr [prevInt3Fproc]
+>         mov     es:[bx],ax
+>         mov     ax,word ptr [prevInt3Fproc+2]
+>         mov     es:[bx+2],ax
+> 
+>         cmp     word ptr [prevInt21Proc+2],0
+>         je      nodisable
+>         cCall   DisableInt21
+> nodisable:
+>         mov     ax,0C00H        ; make GabeN happy by flushing...
+>         int     21h             ; ...the input buffer
+>         mov     bx,cs:[HeadPDB]
+> exk1:   mov     es,bx
+>         mov     ah,50H          ; point to PDB
+>         int     21h
+477c312,317
+<      cCall  DisableKernel
+---
+>         mov     cx,20
+> exk2:   mov     bx,cx           ; close all the file handles
+>         dec     bx
+>         mov     ah,3eH
+>         int     21h
+>         loop    exk2
+478a319,333
+>         mov     bx,es:[PDB_Chain]       ; move to next PDB in chain
+>         or      bx,bx
+>         jnz     exk1
+> 
+>         les     bx,cs:[pSftLink]
+>         mov     cx,es
+>         jcxz    NoSft
+>         mov     word ptr es:[bx  ],-1
+>         mov     word ptr es:[bx+2], 0
+> NoSft:
+>         cmp     word ptr CS:[pSwapHook+2],0
+>         je      NoSwap
+>         xor     ax,ax
+>         cCall   CS:[pSwapHook],<ax,ax>      ; Let swapper cleanup
+> NoSwap:
+681d535
+< 
+773,778c627
+<      cmp    graphics,0           ; graphics mode?
+<      jnz    tcd0
+<      mov    bx,1                 ; yes, so
+<      or     bx,bx                ; clear zero flag
+<      jmp    idx5                 ; and pass all console I/O thru
+< tcd0:   les     bx,cs:[pCurrentPDB]
+---
+>         les     bx,cs:[pCurrentPDB]
+897c746
+<      jmp     PassOnThrough3                  ; display character
+---
+>         jmp     PassOnThrough3                  ; display character
+ 
+windows $
+

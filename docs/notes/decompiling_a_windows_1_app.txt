@@ -1,0 +1,68 @@
+PASCAL call:
+    retn smth or retf smth
+    no add sp whatever because of the above
+    args pushed in the reversed order
+    all WinAPI functions are FAR PASCAL
+    if with symbols, all UPPERCASE functions that do not start with "_" are PASCAL
+
+Library functions:
+    link order is app.obj + winstart.obj + libcs.obj
+    entry point is in winstart.obj
+    all code after winstart.obj are library functions
+    MSC 3.00
+
+Data segment:
+    data from the compiled objects actually starts at 0x10
+    no gaps in data so everything MUST have a reference
+
+Segments:
+    initialized data (_DATA) come before BSS segment
+    do not do int var = 0; for things in BSS, do int var; instead
+
+Order:
+    fully disassemble the file first, work out all the offset references!!!
+    add some NOPs and reassemble until the reassembled executable work just like the original
+
+    decompile WinMain - the function referenced by the entry point function
+    then decompile Init function, first function called by WinMain
+    find references to WndProc in the Init function, decompile it
+    MUST sub in the WM_ constants to work out the purpose of other functions
+    then decompile each of those functions and the functions they reference and ...
+    ALL functions in the compiled binary are in the same order as in the source code
+
+
+Old C syntax:
+BOOL FAR PASCAL function(arg1, arg2)
+int arg1;
+long arg2;
+{
+    int var1;
+
+    /* comment */
+}
+
+Switch statements:
+    jump tables involved
+    find out the value of BX first to know which entry is which
+    do this first (have to + 100 for WM_ messages)
+    switch (value)
+    {
+        case xxx:
+            loc_whatever
+        case yyy:
+            loc_thing
+        default:
+            loc_last_label
+    }
+    then decompile each case
+
+MSC versions:
+    mov ax, 0  - not MSC, screwed
+    sub ax, ax - older version (before Jan 1985)
+    xor ax, ax - newer version (Feb 1985)
+
+Decompilers:
+    Brain and hand - nothing can decompile Win16 code (except Ghidra's Yagi plugin)
+    Ghidra - to get the structure of large functions
+    Convert to i386 ASM, assemble and decompile with Hex-Rays (last resort)
+    

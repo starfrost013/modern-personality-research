@@ -109,7 +109,7 @@ FINT21          db 0                    ; DATA XREF: OPENFILE+B2↓r
                                         ; OPENFILE+150↓r ...
 FEVENT          db 0
 KEYINFO         db 0,0,0,0,0,0,0,0,0,0,0,0 ; DATA XREF: ISKANJI+8↓r
-                                        ; ISKANJI:loc_53E5↓r
+                                        ; INITFWDREF+C9↓o ...
                                         ; KEYINFO IS A STRUCT
 FFAREAST        db 0                    ; DATA XREF: ANSIPREV+8↓r
                                         ; ISKANJI↓r ...
@@ -390,7 +390,7 @@ loc_421:                                ; CODE XREF: LOADMODULE+67↑j
                 lea     ax, [bp-9Ch]
                 push    ss
                 push    ax
-                mov     ax, 2800h
+                mov     ax, offset loc_2800
                 push    ax
                 nop
                 push    cs
@@ -1854,7 +1854,7 @@ CHECKSEGCHKSUM  proc near               ; CODE XREF: LOADSEGMENT+155↓p
                 push    ax
                 call    GETCHKSUMADDR
                 pop     ax
-                jcxz    short locret_E1F
+                jcxz    short chk_done
                 shl     cx, 1
                 shl     cx, 1
                 shl     cx, 1
@@ -1874,9 +1874,9 @@ loc_DDE:                                ; CODE XREF: CHECKSEGCHKSUM+19↓j
                 pop     ds
                 mov     cx, dx
                 xchg    cx, es:[bx]
-                jcxz    short locret_E1F
+                jcxz    short chk_done
                 cmp     cx, dx
-                jz      short locret_E1F
+                jz      short chk_done
 
 BADSEGCONT:
                 mov     bx, ax
@@ -1888,14 +1888,14 @@ BADSEGCONT:
                 push    es
                 push    bx
                 call    KERNELERROR
-                jmp     short locret_E1F
+                jmp     short chk_done
 ; ---------------------------------------------------------------------------
 SZSEGMENTCONTENTSTRASHED db 'Segment contents trashed ',0
                                         ; DATA XREF: CHECKSEGCHKSUM+30↑o
                 db 24h
 ; ---------------------------------------------------------------------------
 
-locret_E1F:                             ; CODE XREF: CHECKSEGCHKSUM+5↑j
+chk_done:                               ; CODE XREF: CHECKSEGCHKSUM+5↑j
                                         ; CHECKSEGCHKSUM+24↑j ...
                 retn
 CHECKSEGCHKSUM  endp
@@ -3348,7 +3348,7 @@ INT3FSAVEDSS    dw 0                    ; DATA XREF: INT3FTHUNK+20↓w
                                         ; SEARCHSTACK+103↓r ...
 INT3FSAVEDDS    dw 0                    ; DATA XREF: INT3FTHUNK+1A↓r
                                         ; SEARCHSTACK+125↓r ...
-INT3FSAVEDFRAME db 2 dup(0)
+INT3FSAVEDFRAME db 2 dup(0)             ; DATA XREF: SEARCHSTACK+162↓o
 INT3FSAVEDIP    dw 0                    ; DATA XREF: INT3FTHUNK+6↓r
                                         ; SEARCHSTACK+11D↓r ...
 INT3FSAVEDCS    dw 0                    ; DATA XREF: INT3FTHUNK+10↓r
@@ -3363,7 +3363,7 @@ INT3FCURRENTIP  dw 0                    ; DATA XREF: INT3FTHUNK+1↓w
 ; =============== S U B R O U T I N E =======================================
 
 
-INT3FTHUNK      proc far
+INT3FTHUNK      proc far                ; DATA XREF: SEARCHSTACK+15A↓o
                 pushf
                 pop     cs:INT3FCURRENTIP
                 push    cs:INT3FSAVEDIP
@@ -6174,6 +6174,8 @@ loc_27E7:                               ; CODE XREF: LOADEXEHEADER+271↑j
 loc_27FE:                               ; CODE XREF: LOADEXEHEADER+2B1↓j
                                         ; LOADEXEHEADER+2C1↓j ...
                 lods    byte ptr es:[si]
+
+loc_2800:                               ; DATA XREF: LOADMODULE+8C↑o
                 or      ax, ax
                 jz      short loc_285B
                 mov     dx, ax
@@ -8291,11 +8293,11 @@ loc_3535:                               ; CODE XREF: SEARCHSTACK+109↑j
                 mov     ax, es:[bx-2]
                 mov     cs:INT3FSAVEDDS, ax
                 mov     word ptr es:[bx+4], cs
-                mov     word ptr es:[bx+2], 1798h
+                mov     word ptr es:[bx+2], offset INT3FTHUNK
                 push    cs
                 pop     es
                 assume es:cseg01
-                mov     bx, 178Ch
+                mov     bx, offset INT3FSAVEDFRAME
                 jmp     loc_34C7
 ; ---------------------------------------------------------------------------
 
@@ -9337,7 +9339,7 @@ YIELD           proc far                ; CODE XREF: STARTTASK+69↑p
                 mov     ds, cs:CURTDB   ; get the current task data block
                 cmp     word ptr ds:7Eh, 4454h ; is 0x7E in the TDB 'MZ' header?
                 jnz     short not_task_handle
-                mov     ax, 3C85h
+                mov     ax, offset loc_3C85
                 inc     word ptr ds:6
                 push    cs
                 push    ax
@@ -9362,6 +9364,7 @@ SZERRYIELDINVALIDTASKHANDLE db 'YIELD: Invalid task handle',0
 ; ---------------------------------------------------------------------------
 
 loc_3C85:                               ; CODE XREF: YIELD+37↑j
+                                        ; DATA XREF: YIELD+1B↑o
                 dec     word ptr ds:6
                 mov     ax, 0FFFFh
 
@@ -9556,6 +9559,8 @@ loc_3D51:                               ; CODE XREF: SETPRIORITY+12↑j
                 push    ax
                 call    INSERTTASK
                 pop     es
+
+loc_3D62:
                 dec     byte ptr es:8
                 pop     ax
                 cbw
@@ -9724,7 +9729,7 @@ INT21_HOOK_TABLE db 0                   ; DATA XREF: INT21HANDLER+A4↓w
                 dw offset DOSTerminateHook
                 db 31h                  ; Int 21/AH=31h - DOS 2+ - TERMINATE AND STAY RESIDENT
                 dw offset DOSTSRHook
-byte_3E0F       db 0                    ; DATA XREF: INT21HANDLER+3↓w
+LAST_INT21_FUNCTION_NUMBER db 0         ; DATA XREF: INT21HANDLER+3↓w
                 dw offset loc_4296
                 db 0
                 db 0
@@ -9833,7 +9838,7 @@ loc_3E96:                               ; CODE XREF: ENABLEDOS+47↑j
                 push    cs
                 pop     ds
                 assume ds:cseg01
-                mov     dx, 48E2h
+                mov     dx, offset INT24HANDLER
                 mov     ax, 2524h
                 int     21h             ; DOS - SET INTERRUPT VECTOR
                                         ; AL = interrupt number
@@ -9949,7 +9954,7 @@ ENABLEINT21     proc near               ; CODE XREF: SLOWBOOT+89↓p
                 assume es:cseg01
                 mov     bx, 80h
                 cli
-                mov     word ptr es:[bx], 408Ch
+                mov     word ptr es:[bx], offset INT20HANDLER
                 mov     word ptr es:[bx+2], cs
                 mov     word ptr es:[bx+4], offset INT21HANDLER
                 mov     word ptr es:[bx+6], cs
@@ -10113,7 +10118,7 @@ arg_0           = word ptr  0Ah
                 push    word ptr ds:3D76h
                 push    word ptr ds:3D74h
                 push    ds
-                mov     word ptr ds:3D76h, 408Eh
+                mov     word ptr ds:3D76h, offset INT21HANDLER
                 push    word ptr ds:3D76h
                 mov     ds, word ptr ds:3D78h
                 sti
@@ -10126,7 +10131,7 @@ PDB_CALL_SYSTEM_ENTRY endp ; sp-analysis failed
 
 
 INT27HANDLER    proc near               ; DATA XREF: ENABLEINT21+2B↑o
-                mov     ax, 3100h
+                mov     ax, 3100h       ; MS-DOS INT 21h,AH=31h (Terminate and Stay Resident)
                 jmp     short INT21HANDLER
 INT27HANDLER    endp
 
@@ -10134,7 +10139,7 @@ INT27HANDLER    endp
 ; =============== S U B R O U T I N E =======================================
 
 
-INT20HANDLER    proc near
+INT20HANDLER    proc near               ; DATA XREF: ENABLEINT21+18↑o
                 xor     ax, ax
 INT20HANDLER    endp
 
@@ -10148,7 +10153,7 @@ INT21HANDLER    proc near               ; CODE XREF: INT27HANDLER+3↑j
                 inc     bp
                 push    bp
                 push    ds
-                mov     cs:byte_3E0F, ah
+                mov     cs:LAST_INT21_FUNCTION_NUMBER, ah
                 mov     bp, cs:word_3D72
                 sub     bp, 3
 
@@ -11313,7 +11318,7 @@ loc_473E:                               ; CODE XREF: DOSTerminateHook+48↑j
                 jcxz    short loc_47A8
                 mov     es, si
                 mov     bx, cs:INT22BASE
-                mov     word ptr es:[bx], 478Ch
+                mov     word ptr es:[bx], offset int22_handler
                 mov     word ptr es:[bx+2], cs
                 xchg    ax, di
 
@@ -11332,7 +11337,8 @@ loc_475E:                               ; CODE XREF: DOSTerminateHook+39↑j
                 cli
                 call    cs:PREVINT21PROC
 
-loc_478C:                               ; DATA XREF: BUILDPDB+8B↓o
+int22_handler:                          ; DATA XREF: DOSTerminateHook+72↑o
+                                        ; BUILDPDB+8B↓o
                 mov     bp, sp
                 add     bp, 10h
                 mov     ds, cs:CURTDB
@@ -11430,7 +11436,7 @@ loc_480E:                               ; CODE XREF: BUILDPDB+5A↑j
                 mov     es:8, bx
                 mov     es:51h, ax
                 mov     es:53h, bx
-                mov     word ptr es:0Ah, offset loc_478C
+                mov     word ptr es:0Ah, offset int22_handler
                 mov     word ptr es:0Ch, cs
                 xor     cx, cx
                 mov     es:48h, cx
@@ -11552,7 +11558,7 @@ sub_48D3        endp
 ; =============== S U B R O U T I N E =======================================
 
 
-INT24HANDLER    proc far
+INT24HANDLER    proc far                ; DATA XREF: ENABLEDOS+74↑o
                 inc     cs:INSCHEDULER
                 cmp     cs:INSCHEDULER, 1
                 jz      short notinscheduler
@@ -12279,7 +12285,7 @@ loc_4CAA:                               ; CODE XREF: GETATOMNAME+3A↑j
 GETATOMNAME     endp ; sp-analysis failed
 
 ; ---------------------------------------------------------------------------
-                db '[]',0Dh,0Ah,'='
+SZINISECTION    db '[]',0Dh,0Ah,'='
 ;
 ; External Entry #57 into the Module
 ; Attributes (0001): Fixed Exported
@@ -13296,7 +13302,8 @@ _LCREAT         proc far
                 mov     cl, ss:[bx+4]
                 mov     ax, cx
                 xor     ch, ch
-                int     21h             ; DOS -
+                int     21h             ; DOS 2+ - CREAT - CREATE OR TRUNCATE FILE
+                                        ; (see CH mov above)
                 jnb     short loc_51FF
                 mov     ax, 0FFFFh
 
@@ -14360,6 +14367,8 @@ loc_56C1:                               ; CODE XREF: LCOMPACT+130↑j
                 pop     bx
                 jmp     short loc_567E
 ; ---------------------------------------------------------------------------
+
+loc_56E0:                               ; DATA XREF: LOCALINIT+5D↓o
                 xor     ax, ax
                 mov     bx, cx
                 inc     bx
@@ -15414,7 +15423,7 @@ loc_5D54:                               ; CODE XREF: LOCALINIT+13↑j
                 mov     [di+6], dx
                 mov     word ptr [di+16h], offset LOCALNOTIFYDEFAULT
                 mov     word ptr [di+18h], cs
-                mov     word ptr [di+14h], 56E0h
+                mov     word ptr [di+14h], offset loc_56E0
                 mov     word ptr [di+1Ch], 200h
                 clc
                 call    LALIGN
@@ -16700,7 +16709,7 @@ loc_64E1:                               ; CODE XREF: GFINDFREE+6↑j
                 loop    loc_64CF
 
 loc_64E6:                               ; CODE XREF: GFINDFREE+12↑j
-                xor     ax, ax
+                xor     ax, ax          ; fail - ax->0
 
 loc_64E8:                               ; CODE XREF: GFINDFREE+D↑j
                 pop     cx
@@ -17348,7 +17357,7 @@ LRUSWEEP_MODE1  endp ; sp-analysis failed
 ; =============== S U B R O U T I N E =======================================
 
 
-LRUSWEEP        proc far
+LRUSWEEP        proc far                ; DATA XREF: BOOTDONE+4D↓o
                 xor     cx, cx
 
 loc_6924:                               ; CODE XREF: LRUSWEEP_MODE1+6↑j
@@ -18513,7 +18522,7 @@ GLOBALMASTERHANDLE endp
 ; ---------------------------------------------------------------------------
 dword_6FBF      dd 0FBh                 ; DATA XREF: DEBUGINIT+2B↓r
                                         ; DEBUGDEFINESEGMENT+27↓r ...
-aSegdebug       db 'SEGDEBUG',0
+aSegdebug       db 'SEGDEBUG',0         ; DATA XREF: DEBUGINIT+11↓o
 
 ; =============== S U B R O U T I N E =======================================
 
@@ -18529,7 +18538,7 @@ DEBUGINIT       proc near               ; CODE XREF: BOOTSTRAP+D0↓p
                 mov     es, bx
                 assume es:nothing
                 mov     di, 100h
-                mov     si, 6FC3h
+                mov     si, offset aSegdebug ; "SEGDEBUG"
                 mov     cx, 9
                 cld
                 repe cmps byte ptr cs:[si], byte ptr es:[di]
@@ -20659,25 +20668,27 @@ locret_7F30:                            ; CODE XREF: __lshl+2↑j
 __lshl          endp
 
 ; ---------------------------------------------------------------------------
-HINITMEM        dw 0                    ; DATA XREF: BOOTSTRAP+CC↓w
-                                        ; BOOTSTRAP:loc_8271↓r ...
+HINITMEM        dw 0                    ; DATA XREF: BOOTDONE+6D↓o
+                                        ; BOOTSTRAP+CC↓w ...
 SEGINITMEM      dw 0                    ; DATA XREF: BOOTSTRAP+25↓w
                                         ; BOOTSTRAP+B0↓r ...
 CPSHRUNK        dw 0                    ; DATA XREF: BOOTSTRAP+17↓w
                                         ; FINDFREESEG+91↓w ...
 LPBOOTAPP       dd 0                    ; DATA XREF: SLOWBOOT+17↓w
                                         ; SLOWBOOT:loc_8412↓w ...
-BOOTEXECBLOCK   db 0Eh dup(0)           ; DATA XREF: SLOWBOOT+29↓w
-                                        ; SLOWBOOT+41↓w ...
+BOOTEXECBLOCK   db 0Eh dup(0)           ; DATA XREF: SLOWBOOT:loc_8469↓o
+                                        ; FASTBOOT+442↓o ...
 WIN_SHOW        db    2                 ; DATA XREF: SLOWBOOT↓o
                                         ; FASTBOOT+3FD↓o
                 db    0
                 db    1
                 db    0
-SZKERNELNAME    db 'KERNEL',0
-SZENABLEHEAPCHECKING db 'EnableHeapChecking',0
+SZKERNELNAME    db 'KERNEL',0           ; DATA XREF: BOOTDONE↓o
+                                        ; BOOTDONE+1B↓o ...
+SZENABLEHEAPCHECKING db 'EnableHeapChecking',0 ; DATA XREF: BOOTDONE+3↓o
 SZFREEZEGLOBALMOTION db 'FreezeGlobalMotion',0
-SZLRUSWEEPFREQUENCY db 'LRUSweepFrequency',0
+                                        ; DATA XREF: BOOTDONE+1E↓o
+SZLRUSWEEPFREQUENCY db 'LRUSweepFrequency',0 ; DATA XREF: BOOTDONE+39↓o
 word_7F8C       dw 0                    ; DATA XREF: BOOTSTRAP+39↓w
                                         ; BOOTSTRAP+1B2↓r
 
@@ -20685,8 +20696,9 @@ word_7F8C       dw 0                    ; DATA XREF: BOOTSTRAP+39↓w
 
 
 BOOTDONE        proc far                ; CODE XREF: SLOWBOOT+A4↓j
-                mov     ax, 7F4Dh
-                mov     bx, 7F54h
+                                        ; DATA XREF: BOOTSTRAP+260↓o
+                mov     ax, offset SZKERNELNAME ; "KERNEL"
+                mov     bx, offset SZENABLEHEAPCHECKING ; "EnableHeapChecking"
                 xor     cx, cx
                 push    cs
                 push    ax
@@ -20699,8 +20711,8 @@ BOOTDONE        proc far                ; CODE XREF: SLOWBOOT+A4↓j
                 mov     es, cs:PGLOBALHEAP
                 assume es:nothing
                 mov     es:0, ax
-                mov     ax, 7F4Dh
-                mov     bx, 7F67h
+                mov     ax, offset SZKERNELNAME ; "KERNEL"
+                mov     bx, offset SZFREEZEGLOBALMOTION ; "FreezeGlobalMotion"
                 xor     cx, cx
                 push    cs
                 push    ax
@@ -20712,8 +20724,8 @@ BOOTDONE        proc far                ; CODE XREF: SLOWBOOT+A4↓j
                 call    near ptr GETPROFILEINT
                 mov     es, cs:PGLOBALHEAP
                 mov     es:2, ax
-                mov     ax, 7F4Dh
-                mov     bx, 7F7Ah
+                mov     ax, offset SZKERNELNAME ; "KERNEL"
+                mov     bx, offset SZLRUSWEEPFREQUENCY ; "LRUSweepFrequency"
                 mov     cx, 0FAh
                 push    cs
                 push    ax
@@ -20725,7 +20737,7 @@ BOOTDONE        proc far                ; CODE XREF: SLOWBOOT+A4↓j
                 call    near ptr GETPROFILEINT
                 or      ax, ax
                 jz      short loc_7FE6
-                mov     bx, 6922h
+                mov     bx, offset LRUSWEEP
                 push    ax
                 push    cs
                 push    bx
@@ -20740,13 +20752,13 @@ loc_7FE6:                               ; CODE XREF: BOOTDONE+4B↑j
                 xor     dx, dx
                 mov     ss:7Eh, dx
                 mov     cs:CURTDB, dx
-                mov     cx, 7F31h
+                mov     cx, offset HINITMEM
                 push    cs
                 push    dx
                 push    cx
                 push    dx
                 push    cs
-                mov     ax, 3B0Ch
+                mov     ax, offset BOOTSCHEDULE
                 push    ax
                 jmp     near ptr GLOBALREALLOC
 BOOTDONE        endp
@@ -20803,7 +20815,7 @@ loc_8076:                               ; CODE XREF: BOOTSTRAP+60↑j
                 align 2
 
 loc_807E:                               ; CODE XREF: BOOTSTRAP+CA↓j
-                jmp     loc_8296
+                jmp     boot_failure_01
 ; ---------------------------------------------------------------------------
 
 loc_8081:                               ; CODE XREF: BOOTSTRAP+65↑j
@@ -20818,8 +20830,8 @@ loc_8081:                               ; CODE XREF: BOOTSTRAP+65↑j
                 push    cs
                 pop     ds
                 assume ds:cseg01
-                mov     cx, 8296h
-                mov     si, 828Bh
+                mov     cx, offset boot_failure_01
+                mov     si, offset SZWINPACKFILE ; "WIN100.BIN"
                 sub     cx, si
                 mov     ax, cx
                 add     al, 2
@@ -20853,7 +20865,7 @@ loc_80AF:                               ; CODE XREF: BOOTSTRAP+71↑j
                 mov     cs:HINITMEM, ax
                 call    DEBUGINIT
                 call    INITDOSVARP
-                mov     bx, 3FC5h
+                mov     bx, offset EXITKERNEL
                 mov     word ptr cs:PEXITPROC, bx
                 mov     word ptr cs:PEXITPROC+2, cs
                 push    ds
@@ -20918,7 +20930,7 @@ loc_8109:                               ; CODE XREF: BOOTSTRAP+F9↑j
                 jnz     short loc_815A
 
 loc_8157:                               ; CODE XREF: BOOTSTRAP+166↓j
-                jmp     loc_8296
+                jmp     boot_failure_01
 ; ---------------------------------------------------------------------------
 
 loc_815A:                               ; CODE XREF: BOOTSTRAP+136↑j
@@ -20950,7 +20962,7 @@ loc_815A:                               ; CODE XREF: BOOTSTRAP+136↑j
                 call    LOADSEGMENT
                 or      ax, ax
                 jnz     short loc_81A9
-                jmp     loc_8296
+                jmp     boot_failure_01
 ; ---------------------------------------------------------------------------
 
 loc_81A9:                               ; CODE XREF: BOOTSTRAP+19A↑j
@@ -21018,129 +21030,47 @@ loc_81C7:                               ; CODE XREF: BOOTSTRAP+1BA↑j
                 mov     es, cs:SEGINITMEM
                 assume es:nothing
                 cmp     word ptr es:0Ah, 0
-                jnz     short loc_8271
-                mov     ax, 7F8Eh
+                jnz     short no_fastboot
+                mov     ax, offset BOOTDONE
                 push    ax
                 jmp     FASTBOOT
 ; ---------------------------------------------------------------------------
 
-loc_8271:                               ; CODE XREF: BOOTSTRAP+25E↑j
+no_fastboot:                            ; CODE XREF: BOOTSTRAP+25E↑j
                 push    cs:HINITMEM
                 nop
                 push    cs
                 call    near ptr GLOBALFREE
                 mov     cs:HINITMEM, ax
                 push    cs:TOPPDB
-                mov     ax, 83DDh
+                mov     ax, offset SLOWBOOT
                 push    ax
                 jmp     INITLOADER
 ; ---------------------------------------------------------------------------
-SZWINPACKFILE   db 'WIN100.BIN',0
+SZWINPACKFILE   db 'WIN100.BIN',0       ; DATA XREF: BOOTSTRAP+8F↑o
 ; ---------------------------------------------------------------------------
 
-loc_8296:                               ; CODE XREF: BOOTSTRAP:loc_807E↑j
+boot_failure_01:                        ; CODE XREF: BOOTSTRAP:loc_807E↑j
                                         ; BOOTSTRAP:loc_8157↑j ...
                 mov     al, 1
                 push    ax
                 nop
                 push    cs
                 call    EXITKERNEL
-                push    bx
-                pop     cx
-                push    bx
-                push    sp
-                inc     bp
-                dec     bp
-                db      2Eh
-                inc     sp
-                push    dx
-                push    si
-                add     [bp+di+45h], cl
-                pop     cx
-                inc     dx
-                dec     di
-                inc     cx
-                push    dx
-                inc     sp
-                db      2Eh
-                inc     sp
-                push    dx
-                push    si
-                add     [di+4Fh], cl
-                push    bp
-                push    bx
-                inc     bp
-                db      2Eh
-                inc     sp
-                push    dx
-                push    si
-                add     [si+49h], al
-                push    bx
-                push    ax
-                dec     sp
-                inc     cx
-                pop     cx
-                db      2Eh
-                inc     sp
-                push    dx
-                push    si
-                add     [bp+di+4Fh], dl
-                push    bp
-                dec     si
-                inc     sp
-                db      2Eh
-                inc     sp
-                push    dx
-                push    si
-                add     [bp+di+4Fh], al
-                dec     bp
-                dec     bp
-                db      2Eh
-                inc     sp
-                push    dx
-                push    si
-                add     [bp+4Fh], al
-                dec     si
-                push    sp
-                push    bx
-                db      2Eh
-                inc     si
-                dec     di
-                dec     si
-                add     [bx+44h], al
-                dec     cx
-                db      2Eh
-                inc     bp
-                pop     ax
-                inc     bp
-                add     [di+53h], dl
-                inc     bp
-                push    dx
-                db      2Eh
-                inc     bp
-                pop     ax
-                inc     bp
-                add     [di+53h], cl
-                inc     sp
-                dec     di
-                push    bx
-                inc     sp
-                db      2Eh
-                inc     bp
-                pop     ax
-                inc     bp
-
-loc_8304:                               ; DATA XREF: SLOWBOOT:loc_8412↓o
-                add     [di+53h], cl
-                inc     sp
-                dec     di
-                push    bx
-                db      2Eh
-                inc     bp
-                pop     ax
-                inc     bp
 ; ---------------------------------------------------------------------------
-                db 0
+SZSYSTEMDRV     db 'SYSTEM.DRV',0       ; DATA XREF: SLOWBOOT:loc_842A↓o
+SZKEYBOARDDRV   db 'KEYBOARD.DRV',0
+SZMOUSEDRV      db 'MOUSE.DRV',0
+SZDISPLAYDRV    db 'DISPLAY.DRV',0
+SZSOUNDDRV      db 'SOUND.DRV',0
+SZCOMMDRV       db 'COMM.DRV',0
+SZFONTSFON      db 'FONTS.FON',0
+SZGDIEXE        db 'GDI.EXE',0
+SZUSEREXE       db 'USER.EXE',0         ; DATA XREF: SLOWBOOT+5E↓o
+SZMSDOSDEXE     db 'MSDOSD.EXE',0       ; DATA XREF: BOOTSTRAP+31C↓o
+                                        ; BOOTSTRAP:boot_failure_02↓o
+SZMSDOSEXE      db 'MSDOS.EXE',0        ; DATA XREF: SLOWBOOT:loc_8412↓o
+                                        ; SLOWBOOT+80↓o
 ; ---------------------------------------------------------------------------
 
 loc_830F:                               ; CODE XREF: SLOWBOOT+51↓p
@@ -21159,7 +21089,7 @@ loc_830F:                               ; CODE XREF: SLOWBOOT+51↓p
                 call    near ptr LOADMODULE
                 cmp     ax, 2
                 jnz     short loc_8360
-                cmp     word ptr [bp+4], 82FAh
+                cmp     word ptr [bp+4], offset SZMSDOSDEXE ; "MSDOSD.EXE"
                 jnb     short loc_8396
                 mov     ax, 401h
                 push    ax
@@ -21177,7 +21107,7 @@ SZBOOTCANNOTFINDFILE db 'BOOT: Unable to find file - ',0
 ; ---------------------------------------------------------------------------
 
 loc_835D:                               ; CODE XREF: BOOTSTRAP+333↑j
-                jmp     short loc_83C5
+                jmp     short boot_failure_02
 ; ---------------------------------------------------------------------------
                 align 2
 
@@ -21200,7 +21130,7 @@ SZBOOTINVALIDEXE db 'BOOT: Invalid .EXE file - ',0
 ; ---------------------------------------------------------------------------
 
 loc_8393:                               ; CODE XREF: BOOTSTRAP+36B↑j
-                jmp     short loc_83C5
+                jmp     short boot_failure_02
 ; ---------------------------------------------------------------------------
                 align 2
 
@@ -21216,16 +21146,16 @@ loc_8396:                               ; CODE XREF: BOOTSTRAP+321↑j
                 push    cs
                 push    word ptr [bp+4]
                 call    KERNELERROR
-                jmp     short loc_83C5
+                jmp     short boot_failure_02
 ; ---------------------------------------------------------------------------
 SZBOOTCANNOTLOAD db 'BOOT: Unable to load - ',0
                                         ; DATA XREF: BOOTSTRAP+394↑o
                 db 24h
 ; ---------------------------------------------------------------------------
 
-loc_83C5:                               ; CODE XREF: BOOTSTRAP:loc_835D↑j
+boot_failure_02:                        ; CODE XREF: BOOTSTRAP:loc_835D↑j
                                         ; BOOTSTRAP:loc_8393↑j ...
-                cmp     word ptr [bp+4], 82FAh
+                cmp     word ptr [bp+4], offset SZMSDOSDEXE ; "MSDOSD.EXE"
                 jnb     short loc_83D5
                 mov     ax, 1
                 push    ax
@@ -21246,7 +21176,7 @@ BOOTSTRAP       endp ; sp-analysis failed
 ; =============== S U B R O U T I N E =======================================
 
 
-SLOWBOOT        proc far
+SLOWBOOT        proc far                ; DATA XREF: BOOTSTRAP+27A↑o
                 mov     word ptr cs:BOOTEXECBLOCK+6, offset WIN_SHOW
                 mov     word ptr cs:BOOTEXECBLOCK+8, cs
                 mov     es, cs:TOPPDB
@@ -21265,13 +21195,13 @@ SLOWBOOT        proc far
 ; ---------------------------------------------------------------------------
 
 loc_8412:                               ; CODE XREF: SLOWBOOT+13↑j
-                mov     word ptr cs:LPBOOTAPP, (offset loc_8304+1)
+                mov     word ptr cs:LPBOOTAPP, offset SZMSDOSEXE ; "MSDOS.EXE"
                 mov     word ptr cs:LPBOOTAPP+2, cs
                 mov     word ptr cs:BOOTEXECBLOCK+2, 80h
                 mov     word ptr cs:BOOTEXECBLOCK+4, es
 
 loc_842A:                               ; CODE XREF: SLOWBOOT+33↑j
-                mov     di, 829Eh
+                mov     di, offset SZSYSTEMDRV ; "SYSTEM.DRV"
 
 loc_842D:                               ; CODE XREF: SLOWBOOT+62↓j
                 push    di
@@ -21283,7 +21213,7 @@ loc_842D:                               ; CODE XREF: SLOWBOOT+62↓j
                 xor     ax, ax
                 cld
                 repne scasb
-                cmp     di, 82F1h
+                cmp     di, offset SZUSEREXE ; "USER.EXE"
                 jb      short loc_842D
                 cmp     word ptr cs:BOOTEXECBLOCK+2, 80h
                 jz      short loc_844F
@@ -21301,13 +21231,13 @@ loc_844F:                               ; CODE XREF: SLOWBOOT+6B↑j
                 xor     ax, ax
                 cld
                 repne scasb
-                cmp     di, 8305h
+                cmp     di, offset SZMSDOSEXE ; "MSDOS.EXE"
                 jb      short loc_844F
                 call    near ptr INITFWDREF
                 call    ENABLEINT21
 
 loc_8469:                               ; CODE XREF: SLOWBOOT+70↑j
-                mov     ax, 7F3Bh
+                mov     ax, offset BOOTEXECBLOCK
                 push    word ptr cs:LPBOOTAPP+2
                 push    word ptr cs:LPBOOTAPP
                 push    cs
@@ -21316,11 +21246,11 @@ loc_8469:                               ; CODE XREF: SLOWBOOT+70↑j
                 push    cs
                 call    near ptr LOADMODULE
                 or      ax, ax
-                jz      short loc_8484
+                jz      short slowboot_fail
                 jmp     near ptr BOOTDONE
 ; ---------------------------------------------------------------------------
 
-loc_8484:                               ; CODE XREF: SLOWBOOT+A2↑j
+slowboot_fail:                          ; CODE XREF: SLOWBOOT+A2↑j
                 mov     ax, 401h
                 push    ax
                 mov     ax, offset SZBOOTCANNOTLOADFILE ; "BOOT: unable to load - \x00$"
@@ -21329,14 +21259,17 @@ loc_8484:                               ; CODE XREF: SLOWBOOT+A2↑j
                 push    word ptr cs:LPBOOTAPP+2
                 push    word ptr cs:LPBOOTAPP
                 call    KERNELERROR
-                jmp     short near ptr LPRETURNONSLOWBOOTERROR
+                jmp     short LPRETURNONSLOWBOOTERROR
 SLOWBOOT        endp ; sp-analysis failed
 
 ; ---------------------------------------------------------------------------
 SZBOOTCANNOTLOADFILE db 'BOOT: unable to load - ',0,'$'
                                         ; DATA XREF: SLOWBOOT+AB↑o
-LPRETURNONSLOWBOOTERROR db 0E9h, 0DEh   ; CODE XREF: SLOWBOOT+BD↑j
-                db 0FDh
+; ---------------------------------------------------------------------------
+
+LPRETURNONSLOWBOOTERROR:                ; CODE XREF: SLOWBOOT+BD↑j
+                jmp     boot_failure_01
+; ---------------------------------------------------------------------------
 word_84B8       dw 0                    ; DATA XREF: FINDFREESEG:loc_853E↓r
                                         ; FINDFREESEG+8C↓w ...
                 db 0Eh dup(0)
@@ -21794,7 +21727,7 @@ forward_ref_on_installed:               ; CODE XREF: FASTBOOT+105↑j
                 xor     bx, bx
                 mov     ax, 401h
                 push    ax
-                mov     ax, 886Ch       ; Forward reference not allowed in installed Windows
+                mov     ax, offset SZERRFORWARDREFERENCE ; Forward reference not allowed in installed Windows
                 push    cs
                 push    ax
                 push    bx
@@ -21803,6 +21736,7 @@ forward_ref_on_installed:               ; CODE XREF: FASTBOOT+105↑j
                 jmp     short loc_88A0
 ; ---------------------------------------------------------------------------
 SZERRFORWARDREFERENCE db 'Forward reference not allowed in installed Windows',0
+                                        ; DATA XREF: FASTBOOT+11D↑o
                 db 24h
 ; ---------------------------------------------------------------------------
 
@@ -22160,7 +22094,7 @@ loc_8B65:                               ; CODE XREF: FASTBOOT+433↓j
                 xor     dx, dx
                 test    word ptr es:0Ch, 8000h
                 jnz     short loc_8B8A
-                mov     bx, 7F3Bh
+                mov     bx, offset BOOTEXECBLOCK
                 mov     dx, cs
 
 loc_8B8A:                               ; CODE XREF: FASTBOOT+440↑j
@@ -22177,7 +22111,7 @@ loc_8B8A:                               ; CODE XREF: FASTBOOT+440↑j
 loc_8B97:                               ; CODE XREF: FASTBOOT+423↑j
                 cmp     word ptr cs:LPBOOTAPP+2, 0
                 jz      short loc_8BB3
-                mov     bx, 7F3Bh
+                mov     bx, offset BOOTEXECBLOCK
                 push    word ptr cs:LPBOOTAPP+2
                 push    word ptr cs:LPBOOTAPP
                 push    cs
@@ -22414,6 +22348,8 @@ SZERRCURRENTDRIVENOTMATCH db 'Current drive does not match$'
                                         ; DATA XREF: INITDOSVARP:wrong_current_drive↓o
                 db 0Dh,0Ah,'$'
 ; ---------------------------------------------------------------------------
+
+locret_8DD6:                            ; DATA XREF: INITDOSVARP+6D↓o
                 iret
 
 ; =============== S U B R O U T I N E =======================================
@@ -22556,7 +22492,7 @@ INITFWDREF      proc far                ; CODE XREF: SLOWBOOT+6D↑p
                 call    near ptr GETPROCADDRESS
                 mov     word ptr PKEYPROC, ax
                 mov     word ptr PKEYPROC+2, dx
-                mov     bx, 55h ; 'U'
+                mov     bx, offset KEYINFO ; ""
                 push    cs
                 push    bx
                 mov     bx, offset CHECKFAREAST
@@ -22580,7 +22516,7 @@ INITFWDREF      endp ; sp-analysis failed
 ; Unreferenced, dead code
 
 CHECKFAREAST    proc near               ; DATA XREF: INITFWDREF+CE↑o
-                mov     si, 55h ; 'U'
+                mov     si, offset KEYINFO ; ""
                 lodsw
                 cmp     al, ah
                 jbe     short loc_8EF5
@@ -22704,7 +22640,7 @@ loc_8F84:                               ; CODE XREF: INITDOSVARP+59↓j
                                         ; Return: ES:BX = value of interrupt vector
                 mov     ah, 25h ; '%'
                 mov     al, 22h ; '"'
-                mov     dx, 8DD6h
+                mov     dx, offset locret_8DD6
                 int     21h             ; DOS - SET INTERRUPT VECTOR
                                         ; AL = interrupt number
                                         ; DS:DX = new vector to be used for specified interrupt

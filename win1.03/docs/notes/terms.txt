@@ -1,2 +1,0 @@
-PDB		Process Data Block		Main struct for process information. Extended version of DOS 2.xx PSP
-TDB		Task Data Block			Main struct for task information ("DON'T YOU DARE CHANGE ANYTHING IN HERE OR RAOR WILL KILL YOU")
