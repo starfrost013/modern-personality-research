@@ -9317,7 +9317,64 @@ BOOTSCHEDULE    endp ; sp-analysis failed
 ; External Entry #30 into the Module
 ; Attributes (0001): Fixed Exported
 ;
-; [0000003E BYTES: COLLAPSED FUNCTION WAITEVENT. PRESS CTRL-NUMPAD+ TO EXPAND]
+
+; =============== S U B R O U T I N E =======================================
+
+; Attributes: bp-based frame
+
+                public WAITEVENT
+WAITEVENT       proc far
+
+arg_0           = word ptr  6
+
+                inc     bp              ; KERNEL_30
+                push    bp
+                mov     bp, sp
+                push    ds
+                mov     ax, [bp+arg_0]
+                call    GETTASKHANDLE
+                mov     ds, ax
+                xor     ax, ax
+                pushf
+                cli
+                dec     word ptr ds:6
+                jge     short loc_3C1E
+                mov     word ptr ds:6, 0
+                jmp     short loc_3C12
+; ---------------------------------------------------------------------------
+
+ret1:                                   ; CODE XREF: WAITEVENT+21↓p
+                iret
+; ---------------------------------------------------------------------------
+
+loc_3C12:                               ; CODE XREF: WAITEVENT+1D↑j
+                push    cs
+                call    ret1
+                mov     ax, 3C01h
+                push    cs
+                push    ax
+                jmp     near ptr RESCHEDULE
+; ---------------------------------------------------------------------------
+
+loc_3C1E:                               ; CODE XREF: WAITEVENT+15↑j
+                jmp     short loc_3C21
+; ---------------------------------------------------------------------------
+
+ret2:                                   ; CODE XREF: WAITEVENT+30↓p
+                iret
+; ---------------------------------------------------------------------------
+
+loc_3C21:                               ; CODE XREF: WAITEVENT:loc_3C1E↑j
+                push    cs
+                call    ret2
+                sub     bp, 2
+                mov     sp, bp
+                pop     ds
+                pop     bp
+                dec     bp
+                retf    2
+WAITEVENT       endp
+
 ;
 ; External Entry #29 into the Module
 ; Attributes (0001): Fixed Exported
@@ -11318,7 +11375,7 @@ loc_473E:                               ; CODE XREF: DOSTerminateHook+48↑j
                 jcxz    short loc_47A8
                 mov     es, si
                 mov     bx, cs:INT22BASE
-                mov     word ptr es:[bx], offset int22_handler
+                mov     word ptr es:[bx], offset loc_478C
                 mov     word ptr es:[bx+2], cs
                 xchg    ax, di
 
@@ -11337,7 +11394,7 @@ loc_475E:                               ; CODE XREF: DOSTerminateHook+39↑j
                 cli
                 call    cs:PREVINT21PROC
 
-int22_handler:                          ; DATA XREF: DOSTerminateHook+72↑o
+loc_478C:                               ; DATA XREF: DOSTerminateHook+72↑o
                                         ; BUILDPDB+8B↓o
                 mov     bp, sp
                 add     bp, 10h
@@ -11436,7 +11493,7 @@ loc_480E:                               ; CODE XREF: BUILDPDB+5A↑j
                 mov     es:8, bx
                 mov     es:51h, ax
                 mov     es:53h, bx
-                mov     word ptr es:0Ah, offset int22_handler
+                mov     word ptr es:0Ah, offset loc_478C
                 mov     word ptr es:0Ch, cs
                 xor     cx, cx
                 mov     es:48h, cx
