@@ -1,0 +1,12 @@
+Chess		IBM PC
+Halo		IBM PCjr
+Palace		IBM PS/2 Model 30
+Vail		IBM PS/2 Model 30 286
+PC Lap, P-14	IBM PC Convertible (P14 cancelled predecessor...also P12?)
+Ferrari		PC Convertible keyboard?
+
+Roundup		PS/2 line (round up the clones):
+Roundup-386	PS/2 Model 80? (also called "Sys80" in one place)
+Snowmass	PS/2 Model 70? not sure...
+
+Nova		Unknown (model byte F7h)
