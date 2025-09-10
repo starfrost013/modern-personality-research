@@ -1,75 +1,75 @@
-Call or feature						5-29-84		10-30-84 Docs	11-26-85	11-17-86
-Session Manager						Y		Y		Y		N
-Preemptive multitasking					Y		Y		Y		Y
-PTDA							Y		Y		Y		Y
-Dynamically linked segmented executables (NE)		N		Y		Y		Y
-Behaviour bits						Y		Y		N		N
-PIF files						N		N		Y		?
+Call or feature						5-29-84		10-30-84 Docs	5-28-85		11-26-85	11-17-86
+Session Manager						Y		Y				Y		N
+Preemptive multitasking					Y		Y				Y		Y
+PTDA							Y		Y				Y		Y
+Dynamically linked segmented executables (NE)		N		Y		Y		Y		Y
+Behaviour bits						Y		Y		Y		N		N
+PIF files						N		N		N		Y		?
 Hard Error handling
-Concurrent I/O						?		Y		?		?
-OPEN access code high nybble				?		Y		?		? Adds "compatibility" and multiprocessing mode
-GetExtendedError (INT 21h,AH=59h,AL=00h)		?		Y		Y		Y Initially proposed for MDOS4, released with DOS 3.0
-GetHardError (INT 21h,AH=59h,AL=01h)			Y		Y		Y		Y
-CREATTEMP (INT 21h,AH=5Ah)				?		Y		Y		Y Initially proposed for MDOS4, released with DOS 3.0
-CREATNEWFILE (INT 21h,AH=5Bh)				?		Y		Y		Y Initially proposed for MDOS4, released with DOS 3.0
-Exec & Go (INT 21h/AH=4Ah/AL=04)			?		Y		Y		?
-TimerService (INT 21h,AH=80h)				?		?		?		?
-AEXEC (Int 21h, AH=80h)					N		N		?		? Not sure what happened here
-FREEZE (INT 21h,AH=81h)					Y		Y		Y		?
-RESUME (INT 21h,AH=82h)					Y		Y		Y		?
-LOCK (INT 21h,AH=5Ch,AL=00h)				?		Y		Y		Y Initially proposed for MDOS4, released with DOS 3.0
-UNLOCK (INT 21h,AH=5Ch,AL=01h)				?		Y		Y		Y Initially proposed for MDOS4, released with DOS 3.0
-GETMAXMEM (INT 21h,AH=83h,AL=00h)			?		N		Y		Y
-SETMAXMEM (INT 21h,AH=83h,AL=01h)			Y		Y		Y		Y
-CREATMEM (Initially INT 21h,AH=84h then AH=85h,AL=00h)	Y		Y		Y		?
-GETMEM (Initially INT 21h,AH=85h then AH=85h,AL=00h)	Y		Y		Y		?
-RELEASEMEM (Initially INT 21h,AH=86h then AH=85h,AL=00h)Y		Y		Y		?
-CREATSEM (later INT 21h,AH=85h,AL=00h)			Y		Y		Y		Y
-OPENSEM (later INT 21h,AH=85h,AL=01h)			Y		Y		Y		Y
-WAITSEM (later INT 21h,AH=85h,AL=02h)			Y		Y		Y		Y
-SIGSEM (later INT 21h,AH=85h,AL=03h)			Y		Y		Y		Y
-GETPID (INT 21h,AH=87h)					Y		Y		Y		?
-SLEEP (INT 21h,AH=89h)					Y		Y		Y		?
-CWAIT (INT 21h,AH=8Ah)					Y		Y		Y		?
-DOSFinalArena (INT 21h,AH=8Bh)				?		N		N		N
-SETSIGNAL (INT 21h,8Ch)					Y		Y		Y		?
-SEND_SIGNAL/KILL (Send Signal, INT 21h,AH=8Dh)		Y		Y		Y		?
-PRIORITY (Get/Set) (INT 21h,AH=8Eh)			Y		Y		Y		?
-Set_Global_Vector (INT 21h,AH=8Fh)			Y		Y		Y		?
-Unset_Vector (INT 21h,AH=90h)				Y		Y		Y		?
-DOSPtrace (INT 21h,AH=91h) (Internal only?)		N		N		N		N 
-Pipe (INT 21h,AH=93h)					N		Y		N		N
-THREAD Create (INT 21h,AH=94h,AL=00h)			N		Y		N*		N
-THREAD Destroy (INT 21h,AH=94h,AL=01h)			N		Y		N*		N
-CritEnter (DOSCALLS)					N		Y		Y		?
-CritLeave (DOSCALLS)					N		Y		Y		?
-Alloc (DOSCALLS)					N		Y		Y (ALLOCSEG)	N? Present in Win16 as GlobalAlloc, code forked from MDOS4
-LocalAlloc (DOSCALLS)					N		Y		N?		N? Present in Win16, code from MDOS4
-ReAlloc (DOSCALLS)					N		Y		Y (REALLOCSEG)	N? Present in Win16 as GlobalRealloc, code forked from MDOS4
-LocalReAlloc (DOSCALLS)					N		Y		N?		N? Present in Win16 as LocalRealloc
-GetDSHandle (DOSCALLS)					N		Y		Y		
-GetSize (DOSCALLS)					N		Y		N?		N?
-LockObject (DOSCALLS)					N		Y		Y (LOCKSEG)	N? Present in Win16 as GlobalLock(?), code forked from MDOS4
-LockLocalObject (DOSCALLS)				N		Y		N?		N? Present in Win16 as LocalLock(?)
-UnlockObject (DOSCALLS)					N		Y		Y (UNLOCKSEG)	N? Present in Win16 as GlobalUnlock(?), code forked from MDOS4
-UnlockLocalObject (DOSCALLS)				N		Y		N?		N? Present in Win16 as LocalUnlock(?), code forked from MDOS4
-Free (DOSCALLS)						N		Y		Y (FREESEG)	N? Present in Win16 as GlobalFree(?)
-IsSwapped (DOSCALLS)					N		Y		Y		?
-LoadModule (DOSCALLS)					N		Y		Part of EXEC	?  Present in Win16
-FreeModule (DOSCALLS)					N		Y		Part of EXEC	?  Present in Win16
-StopModule						N		Y		Part of EXEC	?  Present in Win16
-SchedClock (DEVHLP)					?		Y		?		?
-DevDone (DEVHLP)					?		Y		?		?
-PullRequest (DEVHLP)					?		Y		?		?
-PullParticular (DEVHLP)					?		Y		?		?
-PushRequest (DEVHLP)					?		Y		?		?
-ConsInputFilter (DEVHLP)				?		Y		?		?
-SortRequest (DEVHLP)					?		Y		?		?
-Signal_SM (DEVHLP)					?		Y		?		?
-ProcBlock (DEVHLP)					?		Y		PBLOCK, DOSCALLS?
-ProcRun (DEVHLP)					?		Y		PRUN, DOSCALLS	?
-QueueInit (DEVHLP)					?		Y		?		?
-QueueFlush (DEVHLP)					?		Y		?		?
-QueueWrite (DEVHLP)					?		Y		?		?
-QueueRead (DEVHLP)					?		Y		?		?
-GetDOSVar (DEVHLP)					?		Y		?		?
+Concurrent I/O						?		Y				?		?
+OPEN access code high nybble				?		Y				?		? Adds "compatibility" and multiprocessing mode
+GetExtendedError (INT 21h,AH=59h,AL=00h)		?		Y				Y		Y Initially proposed for MDOS4, released with DOS 3.0
+GetHardError (INT 21h,AH=59h,AL=01h)			Y		Y				Y		Y
+CREATTEMP (INT 21h,AH=5Ah)				?		Y				Y		Y Initially proposed for MDOS4, released with DOS 3.0
+CREATNEWFILE (INT 21h,AH=5Bh)				?		Y				Y		Y Initially proposed for MDOS4, released with DOS 3.0
+Exec & Go (INT 21h/AH=4Ah/AL=04)			?		Y		Y		Y		?
+TimerService (INT 21h,AH=80h)				?		?				?		?
+AEXEC (Int 21h, AH=80h)					N		N				?		? Not sure what happened here
+FREEZE (INT 21h,AH=81h)					Y		Y				Y		?
+RESUME (INT 21h,AH=82h)					Y		Y				Y		?
+LOCK (INT 21h,AH=5Ch,AL=00h)				?		Y				Y		Y Initially proposed for MDOS4, released with DOS 3.0
+UNLOCK (INT 21h,AH=5Ch,AL=01h)				?		Y				Y		Y Initially proposed for MDOS4, released with DOS 3.0
+GETMAXMEM (INT 21h,AH=83h,AL=00h)			?		N				Y		Y
+SETMAXMEM (INT 21h,AH=83h,AL=01h)			Y		Y				Y		Y
+CREATMEM (Initially INT 21h,AH=84h then AH=85h,AL=00h)	Y		Y				Y		?
+GETMEM (Initially INT 21h,AH=85h then AH=85h,AL=00h)	Y		Y				Y		?
+RELEASEMEM (Initially INT 21h,AH=86h then AH=85h,AL=00h)Y		Y				Y		?
+CREATSEM (later INT 21h,AH=85h,AL=00h)			Y		Y				Y		Y
+OPENSEM (later INT 21h,AH=85h,AL=01h)			Y		Y				Y		Y
+WAITSEM (later INT 21h,AH=85h,AL=02h)			Y		Y				Y		Y
+SIGSEM (later INT 21h,AH=85h,AL=03h)			Y		Y				Y		Y
+GETPID (INT 21h,AH=87h)					Y		Y				Y		?
+SLEEP (INT 21h,AH=89h)					Y		Y				Y		?
+CWAIT (INT 21h,AH=8Ah)					Y		Y				Y		?
+DOSFinalArena (INT 21h,AH=8Bh)				?		N				N		N
+SETSIGNAL (INT 21h,8Ch)					Y		Y				Y		?
+SEND_SIGNAL/KILL (Send Signal, INT 21h,AH=8Dh)		Y		Y				Y		?
+PRIORITY (Get/Set) (INT 21h,AH=8Eh)			Y		Y				Y		?
+Set_Global_Vector (INT 21h,AH=8Fh)			Y		Y				Y		?
+Unset_Vector (INT 21h,AH=90h)				Y		Y				Y		?
+DOSPtrace (INT 21h,AH=91h) (Internal only?)		N		N				N		N 
+Pipe (INT 21h,AH=93h)					N		Y				N		N
+THREAD Create (INT 21h,AH=94h,AL=00h)			N		Y				N*		N
+THREAD Destroy (INT 21h,AH=94h,AL=01h)			N		Y				N*		N
+CritEnter (DOSCALLS)					N		Y				Y		?
+CritLeave (DOSCALLS)					N		Y				Y		?
+Alloc (DOSCALLS)					N		Y				Y (ALLOCSEG)	N? Present in Win16 as GlobalAlloc, code forked from MDOS4
+LocalAlloc (DOSCALLS)					N		Y				N?		N? Present in Win16, code from MDOS4
+ReAlloc (DOSCALLS)					N		Y				Y (REALLOCSEG)	N? Present in Win16 as GlobalRealloc, code forked from MDOS4
+LocalReAlloc (DOSCALLS)					N		Y				N?		N? Present in Win16 as LocalRealloc
+GetDSHandle (DOSCALLS)					N		Y				Y		
+GetSize (DOSCALLS)					N		Y				N?		N?
+LockObject (DOSCALLS)					N		Y				Y (LOCKSEG)	N? Present in Win16 as GlobalLock(?), code forked from MDOS4	
+LockLocalObject (DOSCALLS)				N		Y				N?		N? Present in Win16 as LocalLock(?)
+UnlockObject (DOSCALLS)					N		Y				Y (UNLOCKSEG)	N? Present in Win16 as GlobalUnlock(?), code forked from MDOS4
+UnlockLocalObject (DOSCALLS)				N		Y				N?		N? Present in Win16 as LocalUnlock(?), code forked from MDOS4
+Free (DOSCALLS)						N		Y				Y (FREESEG)	N? Present in Win16 as GlobalFree(?)
+IsSwapped (DOSCALLS)					N		Y				Y		?
+LoadModule (DOSCALLS)					N		Y				Part of EXEC	?  Present in Win16
+FreeModule (DOSCALLS)					N		Y				Part of EXEC	?  Present in Win16
+StopModule						N		Y				Part of EXEC	?  Present in Win16
+SchedClock (DEVHLP)					?		Y				?		?
+DevDone (DEVHLP)					?		Y				?		?
+PullRequest (DEVHLP)					?		Y				?		?
+PullParticular (DEVHLP)					?		Y				?		?
+PushRequest (DEVHLP)					?		Y				?		?
+ConsInputFilter (DEVHLP)				?		Y				?		?
+SortRequest (DEVHLP)					?		Y				?		?
+Signal_SM (DEVHLP)					?		Y				?		?
+ProcBlock (DEVHLP)					?		Y				PBLOCK, DOSCALLS?
+ProcRun (DEVHLP)					?		Y				PRUN, DOSCALLS	?
+QueueInit (DEVHLP)					?		Y				?		?
+QueueFlush (DEVHLP)					?		Y				?		?
+QueueWrite (DEVHLP)					?		Y				?		?
+QueueRead (DEVHLP)					?		Y				?		?
+GetDOSVar (DEVHLP)					?		Y				?		?

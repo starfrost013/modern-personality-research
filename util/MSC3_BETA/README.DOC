@@ -1,0 +1,156 @@
+
+                        MS C COMPILER RELEASE NOTES
+                        ===========================
+
+This file contains information related to the beta test release of the MS C
+compiler and libraries.
+
+
+KNOWN BUGS
+==========
+
+The compiler still has the following known code generation bugs:
+
+        - pointers to functions "returning" void give an error
+          message.
+
+        - .comm variables > threshold value do not force a SEGDEF
+
+        - small model text is not put in IGROUP
+
+        - assertion errors in post-optimizer, constant folder, and
+          one generated in compiling a macro (sotofar).
+
+        - bitfields do not allow all unsigned types.
+
+        - bug in typing of comma operator.
+
+        - infinite spill problem in curses test.
+
+        - optimizer creates an infinite loop in certain circumstances.
+
+        - error message given for charptr = charptr - charptr.
+
+        - problem with unitialized portions of a segment not being set to 0.
+
+        - code generation problem with structure copies through far
+          pointers.
+
+        - code generation error which causes illegal instruction trap.
+
+        - "\123L" is scanned incorrectly.
+
+        - char far *cp = (char far *)123 only gets a 2 byte initializer.
+
+        - far is allowed on an array inside a structure (and should not be).
+
+        - far keyword does not always cause allocation outside DGROUP.
+
+        - out of heap errors for switches with large numbers of cases
+
+        - using the -ND switch does not force DS loads on externally visible
+          entry points.
+
+The libraries have the following known bugs:
+
+        - The utime routine does not work and should not be used.
+
+	- There is currently no floating point/math library support.  The 
+	  floating point library, slibfp.lib, which is included in this
+	  release is a dummy which is needed to satisfy the driver (cc) which
+	  includes slibfp.lib in the list of libraries passed to the linker
+	  when it invokes it.  This is not an issue if the make procedures
+	  for windows applications, supplied in this release, are used.
+
+	- The following library routines are not included in this
+	  release:
+
+		execl, execle, execlp, execv, execve, execvp,
+		spawnl, spawnle, spawnlp, spawnv, spawnve, spawnvp,
+		system.
+
+
+ENVIRONMENT ISSUES
+==================
+
+You should remember, when using the driver that the following environment
+variables are used to find the various pieces:
+
+        PATH - used to determine the location of the compiler passes and
+               the linker.
+
+        CLIB - search path for libraries
+
+        INCLUDE - search path for standard system include files
+
+You should also remember to set
+
+        files=20
+
+in your config.sys file.
+
+
+COMPILER SWITCHES
+=================
+
+The switches recognized by the cc driver are given in the list below (NOTE -
+case is significant here!).
+
+            COMMAND LINE COMPILER OPTIONS FOR CC
+
+Preprocessor Control
+    -E            Do preprocess only to stdout (puts in #line directives).
+    -P            Do preprocess only to <file.i>
+    -EP           Do preprocess to stdout (no #line)
+    -C            Leave in comments during preprocessing.
+    -D <string>   Define Values for preprocessor.
+    -I <string>   Define alternate search path for #includes.
+    -X            Do not search the "standard places" automatically
+
+C Language Options
+    -V <string> Imbed the string into the output (.o)
+    -W          Warning level :
+                0 - no warnings
+                1 - "cc" level; structure and overt type mismatches
+                2 - strong typing
+                3 - warn on all automatic conversions
+    -w          Same as -W 0
+
+Code Generation Options
+    -pack         Allocate packed structures -- no even address padding.
+    -K            disable stack probes
+    -WIN          enable windows module entry code
+    -nl <number>  Restrict external names to <number> characters.
+    -M <string>   Configuration options for the x86 family compilers.  Any of
+                  the following options may appear in the string :
+        s  - small model (default)
+        e  - enable use of "near and far" keywords
+        m  - middle model
+        l  - long model
+        t# - change DGRP data size threshold (default is 1024)
+        d  - generate code for ss != ds
+
+ Output and Control
+     -c            Create linkable object file(s) only.
+     -o <filename> Name of executable (default is a.out).
+     -opt#         Do level # post-code generation optimizations.
+     -O            Do max. level post-code generation optimizations.
+     -L            Create a disassembled listing
+     -m <name>     Create a map file
+     -NM <name>    Module name (defaults to file name)
+     -NT <name>    Text segment name (defaults to <module>_TEXT)
+     -ND <name>    Data segment name (defaults to _DATA)
+     -NGT <name>   Text group name (default is IGROUP)
+     -NGD <name>   Data group name (default is DGROUP)
+
+ Debugging and Maintenance
+     -k        Keep temporary files.
+     -d        print arguments to each pass
+     -z        do not exec pass
+     -p0 progname    Replace preprocessor with progname.
+     -p1 progname    Replace P1 with progname.
+     -p2 progname    Replace P2 with progname.
+     -p3 progname    Replace P3 with progname.
+     -pa progname    Replace assembler with progname.
+     -pl progname    Replace linker with progname.
+     -pL pathname    Replace library path with pathname.
