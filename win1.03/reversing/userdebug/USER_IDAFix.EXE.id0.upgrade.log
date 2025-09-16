@@ -1,0 +1,20 @@
+IDA has found an unpacked version of database: C:\Users\mario\ModernPersonality\research\win1.03\reversing\userdebug\USER_IDAFix.EXE.idb
+on the disk.
+
+Should we proceed with the unpacked files?
+ -> Pro~c~eed with unpacked base
+
+  bytes   pages size description
+--------- ----- ---- --------------------------------------------
+   712704    87 8192 allocating memory for b-tree...
+   434176    53 8192 allocating memory for virtual array...
+   262144    32 8192 allocating memory for name pointers...
+-----------------------------------------------------------------
+  1409024            total memory allocated
+
+Loading type libraries...
+Can't use BIOS comments base. -> OK
+Autoanalysis subsystem has been initialized.
+Database for file 'USER_IDAFix.EXE' has been loaded.
+Flushing buffers, please wait...ok
+Unloading IDP module pc...
