@@ -1,0 +1,386 @@
+; Windows Module compiler definition file.
+TITLE   %modulename - Version %version.%revision
+
+; CMERGE macros.
+.XLIST
+
+ifidn <%codetype>,<SMALL>
+memS = 1
+endif
+ifidn <%codetype>,<MEDIUM>
+memM = 1
+endif
+
+?DF = 1                     ; Dont generate default segment definitions
+?PLM = 1;
+?WIN = 1;
+include \lib\cmacros.inc
+.LIST
+
+; Define windows groups.
+;
+; In ASM all segments that have the same 'class' name, e.g. 'DATA', will be
+; gathered together.
+;
+; Segment order is defined by the order in which the
+; segments are encountered in the first object seen by the linker.
+;
+; Groups do not define segment order.  Groups are a directive to the assembler
+; which says all segments mentioned in the group statement should have a common
+; base.  Offsets should start from a common base rather than the beginning of
+; the individual segments.  Offsets will be allocated in ascending order in
+; the group and assigned by segment order.
+;
+; All segments in the same group are allocated offsets beginning
+; from the group rather than from the individual segment bases.
+;
+
+
+; Define module header group (MGROUP)
+MGROUP  GROUP   HEADER,SEGTABLE,ENTTABLE,ENTNAME,NRENTNAME
+
+; DEfine data segment group (DGROUP) if module has one.
+ifdif <%datatype>,<NONE>
+DGROUP  GROUP   _DATA,DATA,CDATA,CONST,_BSS,c_common,_INITDATA,_ENDDATA,STACK
+endif
+
+;
+; Define segment order for module.  Imports segment is public so that imports
+; libraries may be maintained.
+;
+HEADER      SEGMENT PARA 'MODULE'
+HEADER      ENDS
+
+SEGTABLE    SEGMENT BYTE 'MODULE'
+SEGTABLE    ENDS
+
+; RESTABLE computed by NEWEXE from RESOURCES segment below
+;
+
+ENTTABLE    SEGMENT BYTE 'MODULE'
+ENTTABLE    ENDS
+
+ENTNAME     SEGMENT BYTE 'MODULE'
+ENTNAME     ENDS
+
+; STRTABLE computed by NEWEXE from RESOURCES and IMPORTS segments below.
+;
+
+NRENTNAME   SEGMENT BYTE 'MODULE'
+NRENTNAME   ENDS
+
+IMPORTS     SEGMENT PARA PUBLIC 'MODULE'
+IMPORTS     ENDS
+
+ENDIMPORTS  SEGMENT BYTE 'MODULE'
+            DW  -1                      ; Mark end of table for NEWEXE
+ImportsEnd  LABEL   BYTE
+ENDIMPORTS  ENDS
+
+RESOURCES   SEGMENT PARA PUBLIC 'MODULE'
+RESOURCES   ENDS
+
+ENDRESOURCES    SEGMENT BYTE 'MODULE'
+            DW  -1                      ; Mark end of table for NEWEXE
+ResourcesEnd    LABEL   BYTE
+ENDRESOURCES    ENDS
+
+;
+; Define data segment order for data.  Para alignment.  BEFORE CODE SEGMENTS!
+;
+ifdif <%datatype>,<NONE>
+_DATA       SEGMENT PARA PUBLIC 'DATA'
+            DD  0                           ; So null pointers get 0
+
+            DB  49
+            DB  'Module - (C) Copyright Microsoft Corporation 1984'
+
+maxRsrvPtrs = 12
+            DW  maxRsrvPtrs
+usedRsrvPtrs = 0
+labelDP     <PUBLIC,_rsrvptrs>
+
+DefRsrvPtr  MACRO   name
+globalW     name,0
+usedRsrvPtrs = usedRsrvPtrs + 1
+ENDM
+
+DefRsrvPtr  _pLocalHeap
+DefRsrvPtr  _pGlobalHeap
+DefRsrvPtr  _pAtomTable
+DefRsrvPtr  _pWindows
+DefRsrvPtr  _pFileTable
+
+            DB maxRsrvPtrs-usedRsrvPtrs DUP (0)
+
+_DATA       ENDS
+
+DATA        SEGMENT PARA PUBLIC 'DATA'      ; Random stuff for MSC runtimes
+            PUBLIC  __fac,__envseg,_environ,_errno,__oserr,__osfile
+__fac       DQ      0
+__envseg    DW      0
+_environ    DW      0
+_errno      DW      0
+__oserr     DW      0
+__osfile    DW      3 DUP (81h)
+            DW      17 DUP (0)
+DATA        ENDS
+
+CDATA       SEGMENT WORD COMMON 'DATA'      ; Kludge for SLIBFP
+            DW  0                           ; (kludge continued)
+            PUBLIC  __fpinit
+__fpinit    label   DWORD
+fpmath      DD  1 DUP (?)
+fpdata      DD  1 DUP (?)
+fpsignal    DD  1 DUP (?)
+CDATA       ENDS
+
+CONST       SEGMENT WORD PUBLIC 'CONST'
+CONST       ENDS
+
+_BSS        SEGMENT PARA PUBLIC 'BSS'
+_BSS        ENDS
+
+c_common    SEGMENT PARA COMMON 'BSS'       ; Uninitialized C globals end up here
+c_common    ENDS
+
+_INITDATA   SEGMENT PARA PUBLIC 'BSS'
+InitDataBeg LABEL BYTE
+_INITDATA   ENDS
+
+_ENDDATA    SEGMENT PARA 'BSS'
+DataEnd     LABEL BYTE
+_ENDDATA    ENDS
+
+STACK       SEGMENT PARA STACK 'STACK'
+            DB  0       ; Force link to write entire DGROUP
+STACK       ENDS
+endif
+
+
+_TEXT   SEGMENT PARA PUBLIC 'CODE'
+ASSUME  CS:_TEXT
+        PUBLIC  __chkstk
+__chkstk:
+        PUBLIC  chkstk
+chkstk  PROC    FAR
+        pop     cx
+ifidn <%codetype>,<MEDIUM>
+        pop     dx
+endif
+        mov     bx,sp
+        sub     bx,ax
+        mov     sp,bx
+ifidn <%codetype>,<SMALL>
+        jmp     cx
+endif
+ifidn <%codetype>,<MEDIUM>
+        push    dx
+        push    cx
+        ret
+endif
+chkstk  ENDP
+
+_TEXT   ENDS
+
+GenSeg  MACRO   seg
+&seg    SEGMENT PARA PUBLIC 'CODE'
+&seg    ENDS
+        ENDM
+
+;
+; Generate all code segment(s) definitions in correct order (same as
+; in segment table).    AFTER DATA SEGMENT!
+;
+%segments
+ifidn <%segmenttype>,<CODE>
+        GenSeg  %segmentname
+endif
+%end
+
+; All far externals must be defined external to any frame
+ifnb <%startproc>
+        externFP  %startproc
+endif
+ifnb <%loadproc>
+        externFP  %loadproc
+endif
+ifnb <%freeproc>
+        externFP  %freeproc
+endif
+
+;
+; Generate module header segment
+;
+HEADER  SEGMENT PARA 'MODULE'
+        DW      454Eh                           ; Magic
+
+        DW      0                               ; Size of resident header
+        DW      4                               ; Alignment of segment data
+
+        DD      0                               ; File offset of next EXE
+        DD      0                               ; File offset of Segment Data
+        DD      0                               ; File offset of Resource Data
+
+; Header information
+        DW      %exeflags                       ; flags
+        DB      %version                        ; version
+        DB      %revision                       ; revision
+        DW      0                               ; AutoDataSegNo
+        DW      %heapsize                       ; HeapSize
+        DW      %stacksize                      ; StackSize
+
+ifnb <%startproc>
+        DD      %startproc
+else
+        DD      0
+endif
+
+ifnb <%loadproc>
+        DD      %loadproc
+else
+        DD      0
+endif
+
+ifnb <%freeproc>
+        DD      %freeproc
+else
+        DD      0
+endif
+
+; Offsets within the header to various tables
+        DW      SegTableEnd                     ; nSegments
+        DW      offset MGROUP:SegTableBeg       ; pSegTable
+
+        DW      offset RESOURCES:ResourcesEnd   ; cbResTab
+        DW      RESOURCES                       ; pResTab
+
+        DW      EntTableEnd                     ; cbEntTab
+        DW      offset MGROUP:EntTableBeg       ; pEntTab
+
+        DW      EntNameEnd                      ; cbNamTab
+        DW      offset MGROUP:EntNameBeg        ; pNamTab
+
+        DW      offset IMPORTS:ImportsEnd       ; cbStrTab
+        DW      IMPORTS                         ; pStrTab
+
+        DW      NREntNameEnd                    ; cbNRNamTab
+        DW      offset MGROUP:NREntNameBeg      ; pNRNamTab
+
+        DB      16 DUP (?)                      ; Unused bytes
+HEADER  ENDS
+
+
+;
+; Generate Segment Table.  Last entry is always data segment, if any
+;
+SEGTABLE SEGMENT BYTE 'MODULE'
+SegTableBeg LABEL   BYTE
+%segments
+        DW    %segmentflags         ; flags
+        DW    0                     ; oSegment
+ifnb <%segmentname>
+        DW    %segmentname          ; nParagraphs
+else
+        DW    0
+endif
+        DW    0                     ; nReloc
+        DW    %segmentalloc         ; minAlloc
+        DW    0                     ; unused
+%end
+SegTableEnd =   $-SegTableBeg
+SEGTABLE ENDS
+
+
+;
+; Generate Exported Name Table.
+;
+GenExport MACRO internal,flags
+        DD      &internal
+        DW      &flags
+        DW      0
+        ENDM
+
+; All far externals must be defined external to any frame
+%exports
+ifnb <%exportinternal>
+        externFP %exportinternal
+endif
+%end
+
+ENTTABLE    SEGMENT BYTE 'MODULE'
+EntTableBeg LABEL   BYTE
+%exports
+ifnb <%exportinternal>
+        GenExport   %exportinternal,%exportflags
+else
+        GenExport   0,0
+endif
+%end
+EntTableEnd =   $-EntTableBeg
+ENTTABLE    ENDS
+
+
+;
+; Generate Resident Entry Point Name Table.  First entry is always the
+; module name.
+;
+ENTNAME SEGMENT BYTE 'MODULE'
+EntNameBeg  LABEL   BYTE
+        DB      %modulenamelen
+        DB      '%modulename'
+        DW      0
+%resnames
+        DB      %resnamelen
+        DB      '%resname'
+        DW      %resnameord
+%end
+        DB      0                       ; Mark end of table for NEWEXE
+EntNameEnd  =   $-EntNameBeg
+ENTNAME ENDS
+
+
+;
+; Generate Non-Resident Entry Point Name Table.  First entry is always the
+; module description string.
+;
+NRENTNAME   SEGMENT BYTE 'MODULE'
+NREntNameBeg    LABEL   BYTE
+        DB      %descriptionlen
+if %descriptionlen
+        DB      '%description'
+endif
+        DW      0
+%nonresnames
+        DB      %nonresnamelen
+        DB      '%nonresname'
+        DW      %nonresnameord
+%end
+        DB      0                       ; Mark end of table for NEWEXE
+NREntNameEnd    =   $-NREntNameBeg
+NRENTNAME   ENDS
+
+
+;
+; Generate Import Segment.  Converted to relocation records and imported
+; name table entries by NEWEXE program.
+;
+GenImport MACRO internal,ordinal,module,entry
+ifnb <&internal>
+        labelFP <PUBLIC,&internal>
+        DW      &ordinal
+        DB      '&module',0
+ifnb <&entry>
+        DB '&entry'
+endif
+        DB 0
+endif
+        ENDM
+
+IMPORTS SEGMENT PARA PUBLIC 'MODULE'
+%imports
+        GenImport %importinternal,%importordinal,%importmodule,%importentry
+%end
+IMPORTS ENDS
+
+END %startproc
