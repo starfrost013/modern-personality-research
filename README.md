@@ -1,6 +1,11 @@
 # modern:personality - Windows Decompilation
 
-This project attempts to reverse engineer Microsoft Windows 1.x entirely to recompliable code, as well as research it and Multitasking MS-DOS 4.0 ("MT-DOS"). 
+This project attempts to reverse engineer Microsoft Windows 1.x entirely to recompliable code, as well as research it and Multitasking MS-DOS 4.0 ("MT-DOS").
 
 The research repository is located here: [Research Repo](https://github.com/starfrost013/modernpersonality)
 The runtime used to run the legacy toolchain on modern operating systems is here:(https://github.com/starfrost013/modern-personality-runtime)
+
+
+
+IDA Database versions are 7.7, 8.3, 9.0 and 9.2.
+
