@@ -1,0 +1,31 @@
+Filename	Date		Version			Tools							Notes
+M.EXE/M86.EXE   4 Nov 1981  	1.00 (67,456 bytes)	Link 1.02, Lib 1.02, CREF ?.?? 						Pascal pre-release; "8/24/81 Ver" string
+MASM.EXE	8 Dec 1981	IBM 1.00 (67,584 bytes)	CREF ?.??, no-macro ASM 1.00						ASM.EXE is 52,736 bytes
+M.EXE/M86.EXE	5 Jan 1982	1.00 (67,840 bytes)	Link 1.08, Lib 1.02, CREF ?.??						Pascal 2.00
+MASM.EXE	16 Mar 1982	2.04 (67,968 bytes)	Link 1.10, Lib 1.02, CREF ?.??						"3/02/82 Ver" String
+MASM.EXE	8 Feb 1982?	1.06 (70,784 bytes)	Lib 1.02								"2/8/82 Ver" but code seems to be newer
+MASM.EXE	1 Feb 1983	1.10 (77,440 bytes)	Link 2.00, Lib 1.02, CREF 1.00
+MASM.EXE	1 Apr 1983	1.12 (74,112 bytes)	Link 2.01 (Large), Lib 2.00, CREF 1.00					"2/8/82 Ver"
+MASM.EXE	19 Oct 1983	1.25 (80,856 bytes)	Link 2.40, Lib 2.00, CREF 2.00, EXE2BIN					"8/25/82 Ver"
+MASM.EXE	17 Dec 1983	1.27 (81,266 bytes)	Link 2.44, Lib 2.20, CREF 2.00						"8/25/82 Ver"
+MASM.EXE	17 Apr 1984??	IBM 2.00 (76,544 bytes)	Link 2.20, "LIB 1.00 (c)1984"						"8/25/82 Ver" (ASM is 52,782 bytes). Has older tools than 1.25, but 186/286 support
+MASM.EXE	21 Nov 1984	3.00 (77,362 bytes)	Link 3.00, Lib 3.00, CREF 3.00, SYMDEB 3.00, MAPSYM 3.00, MAKE ?.??	Code seems older than 1.27 but the tools are newer. Probably 1.27 is a separate branch (for Windows?)
+MASM.EXE	21 Jun 1985	3.01 (77,362 bytes)										Same as 3.00, but with MAPSYM and SYMDEB 3.01				
+MASM.EXE	19 Aug 1985	4.00 Beta (84,848 bytes)Link 3.04, Lib 3.02, SYMDEB+CREF 4.00 Beta, EXEMOD, EXEPACK,CREF
+
+*Dated 9 Jun 1983 but probably wrong
+
+
+Link 2.40 - MSC 2.03
+Link 2.44 - Windows 1.0 DR4, MSC 3.00.04 beta
+
+Link 3.01 - MSC 3.00
+
+Link 3.51 - MSC 4.00
+
+Link4(X) 4.00 beta - MDOS 4 beta, Windows 1.0 Alpha/Beta
+
+Link4 4.00 - MDOS 4 (1985)
+Link4 4.01 - Windows 1.01
+
+Link4 5.00.12 - Windows 1.03
