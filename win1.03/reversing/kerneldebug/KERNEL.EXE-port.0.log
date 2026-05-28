@@ -1,0 +1,5 @@
+port read 0001
+port write 0101 <- 00
+port write 0101 <- 00
+port write 0101 <- 00
+port write 0102 <- 00

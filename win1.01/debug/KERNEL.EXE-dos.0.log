@@ -1,0 +1,46 @@
+	mcb_new: mcb:$0080 type:Z owner:$0000 size:$9F7F
+dos_real_path: path='/media/starfrost/SSD/Users/mario/emergency/build/src'
+dos_real_path: located as 'C:'
+	chdir 'C:'
+dos_real_path: path='/media/starfrost/SSD/Users/mario/ModernPersonality/research/win1.01/debug/KERNEL.EXE'
+dos_real_path: no common base for drive C
+dos_real_path: no common base for drive A
+dos_real_path: no common base for drive B
+dos_real_path: no common base for drive C
+dos_real_path: no common base for drive D
+dos_real_path: no common base for drive E
+dos_real_path: no common base for drive F
+dos_real_path: no common base for drive G
+dos_real_path: no common base for drive H
+dos_real_path: no common base for drive I
+dos_real_path: no common base for drive J
+dos_real_path: no common base for drive K
+dos_real_path: no common base for drive L
+dos_real_path: no common base for drive M
+dos_real_path: no common base for drive N
+dos_real_path: no common base for drive O
+dos_real_path: no common base for drive P
+dos_real_path: no common base for drive Q
+dos_real_path: no common base for drive R
+dos_real_path: no common base for drive S
+dos_real_path: no common base for drive T
+dos_real_path: no common base for drive U
+dos_real_path: no common base for drive V
+dos_real_path: no common base for drive W
+dos_real_path: no common base for drive X
+dos_real_path: no common base for drive Y
+dos_real_path: no common base for drive Z
+dos_real_path: no common base
+	mcb_new: mcb:$0086 type:Z owner:$0000 size:$9F79
+	mcb_new: mcb:$0080 type:M owner:$0001 size:$0005
+	mcb_new: mcb:$0097 type:Z owner:$0000 size:$9F68
+	mcb_new: mcb:$0086 type:M owner:$0001 size:$0010
+	command: '/media/starfrost/SSD/Users/mario/ModernPersonality/research/win1.01/debug/KERNEL.EXE' args: ''
+	env: 'PATH=C:\'
+	env size: 10 at $0081
+	mcb_resize: mcb:$0086 new size:$FFFF
+	+ mcb:$0086 size:$0010 merging with mcb:$0097 size:$9F68
+	exe: bin=0a10 min=0000 max=0000, alloc 9f79 segments of memory
+	exe read 40800 of 40800 data bytes
+	PSP location: $0087
+	EXE start:    $0097
